@@ -13,7 +13,8 @@
     "precompute": "node scripts/precompute.js",
     "test": "node --test --test-concurrency=1 test/*.test.js",
     "record-live": "node scripts/record-live.js",
-    "verify-model": "node scripts/verify-model.js"
+    "verify-model": "node scripts/verify-model.js",
+    "demo:video": "node scripts/demo-video.js"
   },
   "engines": {
     "node": ">=22.18"

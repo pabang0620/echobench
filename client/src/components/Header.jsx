@@ -39,7 +39,7 @@ export default function Header({ lab, step, onStep }) {
         <div className="top__modes">
           <span className={`pill pill--${status.mode === 'mock' ? 'amber' : 'good'}`} title={status.note}>PayPal: {status.mode === 'mock' ? 'local stand-in' : 'sandbox'}</span>
           <span className={`pill pill--${status.sdk === 'sdk' ? 'good' : 'amber'}`} title="How the judge and the shop talk to PayPal">PayPal client: {status.sdk === 'sdk' ? 'APIMatic SDK' : 'plain REST'}</span>
-          <span className={`pill pill--${status.llm === 'mock' ? 'amber' : 'good'}`} title={status.llm === 'mock' ? (status.recordedModel ? `Scripted text unless a card says Recorded live run (${status.recordedModel.source}, ${status.recordedModel.recordedAt})` : 'No model key or login: the explanation text is scripted') : 'A real model writes the explanation and the patch'}>{status.llm === 'mock' ? 'AI: mocked' : `AI: ${status.llmLabel}`}</span>
+          <span className={`pill pill--${status.llm === 'mock' ? 'amber' : 'good'}`} title={status.llm === 'mock' ? (status.recordedModel ? `Scripted text unless a card says Recorded run (${status.recordedModel.source}, ${status.recordedModel.recordedAt}, scenarios ${(status.recordedModel.scenarioIds || [status.recordedModel.scenarioId]).join(', ')})` : 'No model key or login: the explanation text is scripted') : 'A real model writes the explanation and the patch'}>{status.llm !== 'mock' ? `AI: ${status.llmLabel}` : status.recordedModel ? `AI: recorded run, Claude Sonnet ${status.recordedModel.recordedAt} (${(status.recordedModel.scenarioIds || [status.recordedModel.scenarioId]).join(', ')}); other scenarios mocked` : 'AI: mocked'}</span>
         </div>
       )}
     </header>

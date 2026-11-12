@@ -4,14 +4,14 @@ import { fileURLToPath } from 'node:url'
 import { createApp } from '../server/app.js'
 import { createLab } from '../server/lab.js'
 import { diagnose } from '../server/agent/index.js'
-import { buildRecorded, recordedFile } from '../server/agent/recorded.js'
+import { buildRecorded, recordedRunFile } from '../server/agent/recorded.js'
 import { scenarioById } from '../server/scenarios/definitions.js'
 import { runScenario } from '../server/scenarios/engine.js'
 import { APP_ROOT } from '../server/config.js'
 
 // V10: one real diagnosis. PayPal stays the local stand-in. Needs LLM_BACKEND=account (a Claude Code login) or ANTHROPIC_API_KEY.
 //   LLM_BACKEND=account node scripts/verify-model.js S1 [--record]
-// --record also writes builtin/live-diagnosis.json so the app can replay the run without a key.
+// --record also writes builtin/recorded-runs/<scenario>.json so the app can replay the run without a key.
 const scenarioId = process.argv[2] || 'S1'
 const record = process.argv.includes('--record')
 const scratch = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '.scratch')
@@ -39,7 +39,8 @@ try {
     fallbackReason: diagnosis.fallbackReason,
     model: diagnosis.explanation.modelName,
     seconds: Math.round((Date.now() - started) / 1000),
-    modelToolOrder: diagnosis.modelCalls.map((c) => `${c.tool}${c.summary ? `(${c.summary})` : ''}${c.ok ? '' : ' [error]'}`),
+    modelSeconds: diagnosis.modelMs == null ? null : Math.round(diagnosis.modelMs / 1000),
+    modelToolOrder: diagnosis.modelCalls.map((c) => `${c.tool}${c.summary ? `(${c.summary})` : ''}${c.ok ? '' : ' [error]'}${Number.isInteger(c.atMs) ? ` @${(c.atMs / 1000).toFixed(1)}s` : ''}`),
     tscOk: diagnosis.candidate?.tscOk ?? null,
     rerun: diagnosis.candidate?.rerun?.status ?? null,
     suite: diagnosis.candidate?.suite?.map((s) => `${s.scenario}:${s.status}`).join(' ') ?? null,
@@ -50,8 +51,10 @@ try {
   writeFileSync(path.join(scratch, 'v10-last-diagnosis.json'), JSON.stringify(diagnosis, null, 2))
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n\nModel text:\n${diagnosis.explanation.model}\n\nDiff:\n${diagnosis.candidate?.diff || '(none)'}\n`)
   if (record) {
-    writeFileSync(recordedFile(path.join(APP_ROOT, 'builtin')), `${JSON.stringify(buildRecorded(diagnosis), null, 2)}\n`)
-    process.stdout.write('Wrote builtin/live-diagnosis.json\n')
+    const out = recordedRunFile(path.join(APP_ROOT, 'builtin'), scenarioId)
+    mkdirSync(path.dirname(out), { recursive: true })
+    writeFileSync(out, `${JSON.stringify(buildRecorded(diagnosis), null, 2)}\n`)
+    process.stdout.write(`Wrote builtin/recorded-runs/${scenarioId}.json\n`)
   }
 } finally {
   server.close()

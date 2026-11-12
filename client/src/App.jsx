@@ -58,7 +58,7 @@ export default function App() {
               </p>
             </div>
             <div className="hero__actions">
-              <button type="button" className="btn btn--primary" disabled={Boolean(busy) || !targetId} onClick={async () => { await lab.runAll(); setRefreshKey((k) => k + 1) }}>
+              <button type="button" className="btn btn--primary" disabled={Boolean(busy) || !targetId} onClick={async () => { setOpenRunId(''); await lab.runAll(); setRefreshKey((k) => k + 1) }}>
                 Shake all
               </button>
               {target?.editable && (

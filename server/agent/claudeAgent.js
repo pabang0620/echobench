@@ -32,6 +32,8 @@ export async function runClaudeAgent({ session, tools, apiKey, model }) {
   const anthropic = await client(apiKey)
   const messages = [{ role: 'user', content: userPrompt(session) }]
   let text = ''
+  const started = Date.now()
+  const calls = []
   for (let step = 0; step < MAX_STEPS; step += 1) {
     const response = await anthropic.messages.create({ model, max_tokens: 8000, system: SYSTEM_PROMPT, tools: TOOL_SPECS, messages })
     messages.push({ role: 'assistant', content: response.content })
@@ -46,9 +48,11 @@ export async function runClaudeAgent({ session, tools, apiKey, model }) {
       } catch (err) {
         output = { error: err.message }
       }
+      calls.push({ tool: use.name, input: use.input || {}, ok: !output?.error, atMs: Date.now() - started })
       results.push({ type: 'tool_result', tool_use_id: use.id, content: JSON.stringify(output).slice(0, 12000), is_error: Boolean(output?.error) })
     }
     messages.push({ role: 'user', content: results })
   }
+  session.modelCalls = calls
   return text
 }

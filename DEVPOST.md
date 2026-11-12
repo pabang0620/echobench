@@ -4,7 +4,24 @@ Target prize: Best Use of APIMatic.
 
 ## Inspiration
 
-PayPal's webhook simulator cannot be resent and its events "do not correspond to any real event or transaction". The resend API re-delivers one real event but does not say whether your shop ended up right. Developers learn about the gap from a duplicate order in production, for example woocommerce-paypal-payments #4173.
+PayPal retries a webhook delivery that is not answered 2xx "up to 25 times over 3 days", and its simulator sends mock events that "do not belong to any App and can be generated on demand purely for development and testing purposes" ([PayPal webhooks docs](https://developer.paypal.com/api/rest/webhooks/rest/)). So repeats are normal traffic, but the test tool sends sample payloads, not your shop's orders. The resend API ([Webhooks v1](https://developer.paypal.com/docs/api/webhooks/v1/)) re-delivers one real event but does not say whether your shop ended up right. Developers learn about the gap in production:
+
+- [woocommerce-paypal-payments #4173](https://github.com/woocommerce/woocommerce-paypal-payments/issues/4173) (March 2026): "3–4 WooCommerce orders are created per transaction ... PayPal is only charged once. Stock is reduced multiple times." Two incidents, 6 and 4 duplicate orders.
+- [opencollective #5644](https://github.com/opencollective/opencollective/issues/5644) (June 2022): a duplicate transaction from two capture webhooks created "with a `0.07s` delay".
+
+## Who it is for
+
+The first user is a developer who maintains a PayPal checkout plugin or a shop's PayPal webhook handler (for example the WooCommerce PayPal Payments maintainers above) and wants to know, before release, whether repeated, reordered or missing PayPal events leave the shop's books different from PayPal's.
+
+## Why this is good for PayPal
+
+Every duplicate shipment or missed refund in a merchant's books becomes a support ticket, a dispute or a merchant who blames the payment provider, even when PayPal behaved as documented. A replay lab that judges a handler against PayPal's own records turns "make your webhook handler idempotent" from advice into a test merchants and plugin authors can run. PayPal could ship it as a "replay my sandbox deliveries" mode next to the existing simulator and resend API, and the plan rows from the APIMatic Context Plugin give its SDK users the contract to test against.
+
+## What the demo proves today, and what needs PayPal or partners
+
+- Today, with no keys: the replay engine, state resets, the judge, the contract reader, the reply-cutting proxy, `tsc` on the patch and all re-runs are real, against a local PayPal stand-in. Two real Claude Sonnet diagnoses (S1 and S5b) are replayed and re-verified by the server.
+- Measured on the PayPal sandbox on 2026-11-12: V4, V5 (first half), V8, V11 (below).
+- Needs a public URL or a person: recording real sandbox deliveries (V1), resend timing and signing (V2), C-UNK through the proxy on the sandbox. Needs APIMatic's plugin run twice: plugin off / on comparison (R2). Needs PayPal: a sandbox "replay this recording" API would remove the need for a tunnel.
 
 ## What it does
 
@@ -18,10 +35,12 @@ Claude Code with the APIMatic Context Plugin 0.4.1 (nine TypeScript skills), API
 
 ## Sandbox evidence (PayPal sandbox, 2026-11-12)
 
+Source: `VERIFY.md` "Sandbox results" and `builtin/sandbox-evidence.json` (shown in the app's Contract tab as "Measured on the PayPal sandbox").
+
 - The SDK read equals the REST read of the same real order (V4).
 - A repeated `PayPal-Request-Id` returned the same refund id (201 then 200) and left one refund on the order (V5, first half).
 - A real contract payment was recorded (V8). The SDK smoke reads work and a made-up id gives a typed 404 (V11).
-- AI step: one real run through a local Claude Code account (Sonnet, tool order and result in VERIFY.md V10), saved and replayable as a "Recorded live run". The hosted API path was not run.
+- AI step (not sandbox, listed for completeness): two real runs through a local Claude Code account on 2026-11-12, S1 (23 tool calls) and S5b (25 tool calls, 39 s of model time), tool order and results in VERIFY.md V10. They ship as `builtin/live-diagnosis.json` and `builtin/recorded-runs/S5b.json` and replay without a key as "Recorded run: Claude Sonnet (local account), 2026-11-12"; tsc and the re-runs are done again by the server each time. The hosted API path was not run.
 
 Not claimed: recording real webhook deliveries (needs a public URL), C-UNK through the proxy on the sandbox, plugin off / on comparison, EverShop. The default demo uses a local PayPal stand-in and says so on screen.
 
@@ -37,4 +56,11 @@ EverShop as an unmodified target (R1), plugin off / on handlers (R2), a resend m
 
 ## Testing instructions
 
-See README.md, "Testing instructions" (about 3 minutes, no keys): `npm install`, `npm run build`, `npm start`, open http://127.0.0.1:3101, Shake all, open the first red row, Explain and fix, Apply, Shake all again, then the Contract tab. "Reset to planted bugs" restores the start.
+See README.md, "Testing instructions" (about 3 minutes, no keys). `npm install`, `npm run build`, `npm start`, open http://127.0.0.1:3101 (or `npm run demo:video` for a clean start), then:
+
+1. Open the app (target MugShop (planted bugs)).
+2. Shake all: S1 and S5b red, S6 green.
+3. Click the S1 row, Explain and fix (replays the recorded Claude Sonnet run; the S5b row has its own).
+4. Apply to the MugShop working copy, then Shake all again: green. Reset to planted bugs restores the start.
+5. Contract tab: sandbox evidence, contrast table, Run C-UNK.
+6. Recording tab. 7. Inbound events table and A/B tabs.

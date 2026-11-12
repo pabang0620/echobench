@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api.js'
 import { Evidence, Spinner, StatusBadge } from './common.jsx'
+import ModelText from './ModelText.jsx'
 import ProxyStory from './ProxyStory.jsx'
 import Timeline from './Timeline.jsx'
 
@@ -23,7 +24,7 @@ function contractNote(run) {
 function modelBadge(d) {
   const source = d.explanation.source || d.explanation.modelName || 'the model'
   if (d.mode === 'mock') return { tone: 'amber', text: 'Mocked model output' }
-  if (d.mode === 'recorded') return { tone: 'good', text: `Recorded live run: ${d.recorded.source}, ${d.recorded.recordedAt}` }
+  if (d.mode === 'recorded') return { tone: 'good', text: `Recorded run: ${d.recorded.source}, ${d.recorded.recordedAt}` }
   return { tone: 'good', text: `Written by ${source}` }
 }
 
@@ -51,7 +52,7 @@ function Diagnosis({ diagnosis, applying, onApply, canEdit }) {
       ) : (
         <>
           <h4>Explanation from {diagnosis.explanation.source || diagnosis.explanation.modelName || 'the model'}{diagnosis.mode === 'recorded' ? ` (${diagnosis.recorded.model}, recorded ${diagnosis.recorded.recordedAt})` : ''}</h4>
-          {diagnosis.explanation.model ? <p className="model-text">{diagnosis.explanation.model}</p> : <p className="muted">The model returned no explanation text.</p>}
+          {diagnosis.explanation.model ? <ModelText text={diagnosis.explanation.model} /> : <p className="muted">The model returned no explanation text.</p>}
           {diagnosis.explanation.evidence?.length > 0 && <Evidence title="Judge's verdicts (EchoBench, not the model)" data={diagnosis.explanation.evidence.join('\n')} />}
         </>
       )}
@@ -74,7 +75,7 @@ function Diagnosis({ diagnosis, applying, onApply, canEdit }) {
           </div>
         </>
       ) : <p className="muted">No patch for this target. A real model run (LLM_BACKEND=account or ANTHROPIC_API_KEY) can write one.</p>}
-      {modelCalls.length > 0 && <Evidence title={`Tool calls the model made, in order (${modelCalls.length})`} data={modelCalls.map((m, i) => `${i + 1}. ${m.tool}${m.summary ? ` ${m.summary}` : ''}`).join('\n')} />}
+      {modelCalls.length > 0 && <Evidence title={`Tool calls the model made, in order (${modelCalls.length})`} data={[...modelCalls.map((m, i) => `${i + 1}. ${Number.isInteger(m.atMs) ? `[${(m.atMs / 1000).toFixed(1)} s] ` : ''}${m.tool}${m.summary ? ` ${m.summary}` : ''}`), ...(diagnosis.recorded?.durationMs ? [`Model time: ${Math.round(diagnosis.recorded.durationMs / 1000)} s`] : diagnosis.modelMs ? [`Model time: ${Math.round(diagnosis.modelMs / 1000)} s`] : [])].join('\n')} />}
       <Evidence title="Tool steps run by this server (real tools, tsc, re-runs)" data={diagnosis.steps.map((s) => `${s.tool}: ${s.summary}`).join('\n')} />
     </div>
   )

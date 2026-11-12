@@ -52,10 +52,13 @@ export async function diagnose(lab, { runId }, deps = {}) {
   let mode = backend === 'mock' ? 'mock' : 'live'
   let fallbackReason = null
   let result
+  let modelMs = null
   if (mode === 'live') {
+    const modelStarted = Date.now()
     try {
       const runModel = deps.runModel || (backend === 'account' ? (args) => runAccountAgent({ ...args, model }) : (args) => runClaudeAgent({ ...args, apiKey: lab.cfg.anthropicKey, model }))
       const text = await runModel({ session, tools })
+      modelMs = Date.now() - modelStarted
       // Only the judge's verdicts come from EchoBench here. The words are the model's own (explanation.model).
       const source = backend === 'account' ? ACCOUNT_LABEL : `Claude (${model}, Anthropic API)`
       result = { explanation: { cause: [], fix: [], evidence: explainRun(run).evidence, model: text || '', modelName: model, source }, patch: session.candidate ? { ok: session.candidate.tsc.ok } : null }
@@ -90,8 +93,9 @@ export async function diagnose(lab, { runId }, deps = {}) {
     createdAt: new Date().toISOString(),
     explanation: result.explanation,
     steps: session.steps,
-    recorded: mode === 'recorded' ? { backend: recorded.backend, model: recorded.model, source: recorded.source, recordedAt: recorded.recordedAt, toolCalls: recorded.toolCalls } : null,
-    modelCalls: mode === 'live' ? session.modelCalls.map((c) => ({ tool: c.tool, ok: c.ok, summary: summarizeCall(c) })) : [],
+    recorded: mode === 'recorded' ? { backend: recorded.backend, model: recorded.model, source: recorded.source, recordedAt: recorded.recordedAt, durationMs: recorded.durationMs ?? null, toolCalls: recorded.toolCalls } : null,
+    modelMs: mode === 'live' ? modelMs : null,
+    modelCalls: mode === 'live' ? session.modelCalls.map((c) => ({ tool: c.tool, ok: c.ok, summary: summarizeCall(c), ...(Number.isInteger(c.atMs) ? { atMs: c.atMs } : {}) })) : [],
     patchEdits: mode === 'live' && candidate ? session.candidateEdits : null,
     candidate: candidate && {
       id: candidate.id,

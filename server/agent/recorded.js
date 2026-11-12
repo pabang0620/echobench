@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { z } from 'zod'
 import { explainRun } from './explain.js'
@@ -13,18 +13,35 @@ const recordedSchema = z.object({
   source: z.string(),
   recordedAt: z.string(),
   text: z.string(),
-  toolCalls: z.array(z.object({ tool: z.string(), summary: z.string() })),
+  // Total model time in ms and, per tool call, ms since the run started (runs recorded before 2026-11-12 13:00 have only the total).
+  durationMs: z.number().int().nonnegative().optional(),
+  toolCalls: z.array(z.object({ tool: z.string(), summary: z.string(), atMs: z.number().int().nonnegative().optional() })),
   edits: z.array(z.object({ file: z.string(), old_str: z.string().optional(), new_str: z.string().optional(), content: z.string().optional() })).min(1),
 })
 
+// One file per scenario in builtin/recorded-runs/<scenario>.json. The first run (S1) is builtin/live-diagnosis.json.
 export const recordedFile = (builtinDir) => path.join(builtinDir, 'live-diagnosis.json')
+export const recordedRunFile = (builtinDir, scenarioId) => path.join(builtinDir, 'recorded-runs', `${scenarioId}.json`)
+
+function readRecorded(file) {
+  if (!existsSync(file)) return null
+  const parsed = recordedSchema.safeParse(JSON.parse(readFileSync(file, 'utf8')))
+  return parsed.success ? parsed.data : null
+}
+
+function allRecorded(dir) {
+  if (!dir) return []
+  const runsDir = path.join(dir, 'recorded-runs')
+  const files = existsSync(runsDir) ? readdirSync(runsDir).filter((f) => f.endsWith('.json')).map((f) => path.join(runsDir, f)) : []
+  return [recordedFile(dir), ...files].map(readRecorded).filter(Boolean)
+}
 
 export function loadRecorded(dir, scenarioId) {
   if (!dir) return null
-  const file = recordedFile(dir)
-  if (!existsSync(file)) return null
-  const parsed = recordedSchema.safeParse(JSON.parse(readFileSync(file, 'utf8')))
-  return parsed.success && parsed.data.scenarioId === scenarioId ? parsed.data : null
+  const own = readRecorded(recordedRunFile(dir, scenarioId))
+  if (own?.scenarioId === scenarioId) return own
+  const legacy = readRecorded(recordedFile(dir))
+  return legacy?.scenarioId === scenarioId ? legacy : null
 }
 
 // Replays the recorded edits through the real propose_patch tool, so tsc and the re-runs stay real.
@@ -43,16 +60,14 @@ export function summarizeCall(call) {
   return String(input.path || input.label || input.scenario_id || input.run_id || input.order_id || input.name || '')
 }
 
-// For the status badge: "Claude Sonnet (local account), 2026-11-12" when a recorded run ships with the app.
+// For the status badge: "Claude Sonnet (local account), 2026-11-12" and which scenarios have a recorded run.
 export function recordedLabel(lab) {
-  if (!lab.cfg.recordedDir) return null
-  const file = recordedFile(lab.cfg.recordedDir)
-  if (!existsSync(file)) return null
-  const parsed = recordedSchema.safeParse(JSON.parse(readFileSync(file, 'utf8')))
-  return parsed.success ? { source: parsed.data.source, model: parsed.data.model, recordedAt: parsed.data.recordedAt, scenarioId: parsed.data.scenarioId } : null
+  const runs = allRecorded(lab.cfg.recordedDir)
+  if (!runs.length) return null
+  return { source: runs[0].source, model: runs[0].model, recordedAt: runs[0].recordedAt, scenarioId: runs[0].scenarioId, scenarioIds: [...new Set(runs.map((r) => r.scenarioId))] }
 }
 
-// Builds the file `builtin/live-diagnosis.json` from a live diagnosis record. Only a verified patch is worth replaying.
+// Builds a recorded-run file from a live diagnosis record. Only a verified patch is worth replaying.
 export function buildRecorded(record) {
   if (record.mode !== 'live') throw new Error('Only a live diagnosis can be recorded (mode: live)')
   if (!record.candidate?.verified || !record.patchEdits?.length) throw new Error('The diagnosis has no verified patch to record')
@@ -64,7 +79,8 @@ export function buildRecorded(record) {
     source: record.explanation.source,
     recordedAt: record.createdAt.slice(0, 10),
     text: record.explanation.model,
-    toolCalls: record.modelCalls.map((c) => ({ tool: c.tool, summary: c.summary })),
+    ...(Number.isInteger(record.modelMs) ? { durationMs: record.modelMs } : {}),
+    toolCalls: record.modelCalls.map((c) => ({ tool: c.tool, summary: c.summary, ...(Number.isInteger(c.atMs) ? { atMs: c.atMs } : {}) })),
     edits: record.patchEdits,
   })
 }

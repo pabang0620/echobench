@@ -20,7 +20,7 @@ async function loadSdk() {
 }
 
 // Maps the tool specs to SDK tools. Every call goes to the session's own tool functions and is noted in `calls`.
-export function buildSdkTools(sdk, tools, calls) {
+export function buildSdkTools(sdk, tools, calls, started = Date.now()) {
   return TOOL_SPECS.map((spec) =>
     sdk.tool(spec.name, spec.description, z.fromJSONSchema(spec.input_schema).shape, async (input) => {
       let output
@@ -29,7 +29,7 @@ export function buildSdkTools(sdk, tools, calls) {
       } catch (err) {
         output = { error: err.message }
       }
-      calls.push({ tool: spec.name, input, ok: !output?.error })
+      calls.push({ tool: spec.name, input, ok: !output?.error, atMs: Date.now() - started })
       return { content: [{ type: 'text', text: JSON.stringify(output).slice(0, 12000) }], isError: Boolean(output?.error) }
     }),
   )

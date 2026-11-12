@@ -153,7 +153,7 @@ test('without a recorded file nothing changes; a broken or other-scenario file i
   }
 })
 
-test('a recorded live run replays as "Recorded live run" with its text and tool order; tsc and the re-runs are real and decide verified', async () => {
+test('a recorded run replays as "Recorded run" with its text and tool order; tsc and the re-runs are real and decide verified', async () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'echobench-rec-'))
   const lab = await startLab({ recordedDir: dir })
   try {
