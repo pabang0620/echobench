@@ -15,7 +15,8 @@ async function json(res) {
   return res.json()
 }
 
-export async function buildBuiltinRecording({ dataDir, outDir = path.join(APP_ROOT, 'builtin', BUILTIN_ID) }) {
+// The same purchase can be recorded against another target (the agent-built handlers of R2) with targetId/id/name.
+export async function buildBuiltinRecording({ dataDir, targetId = 'mugshop-reference', id = BUILTIN_ID, name = 'MugShop demo purchase (built-in, recorded against the local PayPal stand-in)', outDir = path.join(APP_ROOT, 'builtin', id) }) {
   const lab = await createLab({ dataDir, mode: 'mock', settleWindowMs: 3000 })
   const app = createApp(lab)
   const server = await new Promise((resolve) => {
@@ -26,9 +27,9 @@ export async function buildBuiltinRecording({ dataDir, outDir = path.join(APP_RO
   const mock = (p, body = {}) => fetch(`${lab.ledgerUrl}${p}`, { method: 'POST', body: JSON.stringify(body) }).then(json)
 
   try {
-    const target = lab.target('mugshop-reference')
+    const target = lab.target(targetId)
     await target.start({ fresh: true })
-    const rec = lab.recorder.start({ id: BUILTIN_ID, name: 'MugShop demo purchase (built-in, recorded against the local PayPal stand-in)', targetId: target.id, source: 'builtin-mock', webhookId: lab.cfg.webhookId })
+    const rec = lab.recorder.start({ id, name, targetId: target.id, source: 'builtin-mock', webhookId: lab.cfg.webhookId })
 
     // A captured, unrefunded payment for the contract tests. PayPal sends no webhooks for it.
     await lab.setDelivery(false)

@@ -16,7 +16,7 @@ after(() => ctx.stop())
 
 const run = (id, target) => runScenario({ lab: ctx.lab, scenario: scenarioById(id), recording: ctx.recording(), target })
 
-test('C-DUP: with the claim, two simultaneous refund requests become one PayPal refund (green)', async () => {
+test('C-DUP: with the claim, the same refund from admin then support becomes one PayPal refund (green)', async () => {
   const result = await run('C-DUP', ctx.lab.target('mugshop-reference'))
   assert.equal(result.status, 'green', result.headline)
   assert.equal(result.ledger.refunds.length, 1)
@@ -38,6 +38,7 @@ test('C-UNK: the proxy forwards the refund, cuts the reply, and the app settles 
   assert.equal(cut.status, 201, 'PayPal had already done the refund')
   const resends = result.proxyLog.filter((p) => p.method === 'POST' && /refund$/.test(p.path) && p.requestId === cut.requestId && !p.cut)
   assert.equal(resends.length, 1)
+  assert.equal(resends[0].status, 200, 'a repeat with the same PayPal-Request-Id answers 200, as measured on the sandbox')
   assert.equal(result.ledger.refunds.length, 1)
   assert.equal(result.stateAfter.refunds.length, 1)
 })

@@ -1,0 +1,3881 @@
+{
+ "generatedAt": "2026-11-12T06:03:48.905Z",
+ "note": "R2 plugin off / on: webhook scenarios on the two agent-built handlers, local PayPal stand-in. Generation logs in targets/ab/*/GENERATION_LOG.md.",
+ "recordings": {
+  "ab-plugin-off": "ab-plugin-off-demo",
+  "ab-plugin-on": "ab-plugin-on-demo"
+ },
+ "runs": [
+  {
+   "id": "run_mwd56iqzd5bf72",
+   "scenarioId": "S0",
+   "title": "Control: the recorded purchase, in order",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:27.467Z",
+   "durationMs": 707,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 160
+    },
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 15
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56jam177a4a",
+   "scenarioId": "S1",
+   "title": "Same event twice",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:28.174Z",
+   "durationMs": 701,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 34
+    },
+    {
+     "label": "completed (repeat)",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 39
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56ju3f44a76",
+   "scenarioId": "S2",
+   "title": "Same event twice, at the same time",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:28.875Z",
+   "durationMs": 694,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed (copy 1)",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 56
+    },
+    {
+     "label": "completed (copy 2)",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 52
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56kdd90e639",
+   "scenarioId": "S3",
+   "title": "Capture event before the approval event",
+   "kind": "webhook",
+   "rules": [
+    "I1",
+    "I4"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:29.569Z",
+   "durationMs": 610,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    },
+    {
+     "rule": "I4",
+     "status": "pass",
+     "message": "Same final state as the in-order run",
+     "evidence": {
+      "after": {
+       "status": "COMPLETED",
+       "shipped": 1,
+       "refunds": [],
+       "events": 2
+      }
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 22
+    },
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 11
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-C5C0072252522C9C7",
+     "WH-A92E987FFC9C7F01F"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56kub16c1d8",
+   "scenarioId": "S4",
+   "title": "Approval event races the return path",
+   "kind": "webhook",
+   "rules": [
+    "I1",
+    "I4"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:30.179Z",
+   "durationMs": 497,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    },
+    {
+     "rule": "I4",
+     "status": "pass",
+     "message": "Same final state as the in-order run",
+     "evidence": {
+      "after": {
+       "status": "COMPLETED",
+       "shipped": 1,
+       "refunds": [],
+       "events": 2
+      }
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 76
+    },
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 10
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56l841a9318",
+   "scenarioId": "S5",
+   "title": "Second partial refund event never arrives",
+   "kind": "webhook",
+   "rules": [
+    "I5"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP2",
+   "startedAt": "2026-11-12T06:03:30.676Z",
+   "durationMs": 6451,
+   "status": "red",
+   "headline": "After 6s PayPal records 12.00 refunded, the shop still books 4.00",
+   "verdicts": [
+    {
+     "rule": "I5",
+     "status": "fail",
+     "message": "After 6s PayPal records 12.00 refunded, the shop still books 4.00",
+     "evidence": {
+      "paypal": [
+       {
+        "id": "A81BA35510136E8AD",
+        "amount": "4.00",
+        "status": "COMPLETED"
+       },
+       {
+        "id": "E23B79BA76D8DE95F",
+        "amount": "8.00",
+        "status": "COMPLETED"
+       }
+      ],
+      "shop": [
+       {
+        "id": "A81BA35510136E8AD",
+        "amount": "4.00"
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "refund2 (dropped, never delivered)",
+     "status": 0,
+     "dropped": true
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     },
+     {
+      "text": "refunded 4.00",
+      "flag": false
+     },
+     {
+      "text": "books 4.00 of 12.00",
+      "flag": true
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56q7b5545b1",
+   "scenarioId": "S5b",
+   "title": "Two partial refunds, 4.00 then 8.00",
+   "kind": "webhook",
+   "rules": [
+    "I2"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP1",
+   "startedAt": "2026-11-12T06:03:37.127Z",
+   "durationMs": 427,
+   "status": "red",
+   "headline": "PayPal refunds 12.00 (2), shop books 0.00 (0)",
+   "verdicts": [
+    {
+     "rule": "I2",
+     "status": "fail",
+     "message": "PayPal refunds 12.00 (2), shop books 0.00 (0)",
+     "evidence": {
+      "shop": [],
+      "paypal": [
+       {
+        "id": "A81BA35510136E8AD",
+        "amount": "4.00",
+        "status": "COMPLETED"
+       },
+       {
+        "id": "E23B79BA76D8DE95F",
+        "amount": "8.00",
+        "status": "COMPLETED"
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "refund1",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 67
+    },
+    {
+     "label": "refund2",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 8
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     },
+     {
+      "text": "books 0.00 of 12.00",
+      "flag": true
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56qj6b055eb",
+   "scenarioId": "S6",
+   "title": "Forged events",
+   "kind": "webhook",
+   "rules": [
+    "I3"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP3",
+   "startedAt": "2026-11-12T06:03:37.554Z",
+   "durationMs": 479,
+   "status": "green",
+   "headline": "Rejected 3 forged events (state unchanged)",
+   "verdicts": [
+    {
+     "rule": "I3",
+     "status": "pass",
+     "message": "Rejected 3 forged events (state unchanged)",
+     "evidence": {
+      "statuses": [
+       {
+        "label": "body changed after signing",
+        "status": 400
+       },
+       {
+        "label": "simulator event (webhook id \"WEBHOOK_ID\")",
+        "status": 400
+       },
+       {
+        "label": "signed with a certificate that is not PayPal's",
+        "status": 400
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "body changed after signing",
+     "status": 400,
+     "body": {
+      "error": "invalid signature"
+     },
+     "ms": 79
+    },
+    {
+     "label": "simulator event (webhook id \"WEBHOOK_ID\")",
+     "status": 400,
+     "body": {
+      "error": "invalid signature"
+     },
+     "ms": 16
+    },
+    {
+     "label": "signed with a certificate that is not PayPal's",
+     "status": 400,
+     "body": {
+      "error": "invalid signature"
+     },
+     "ms": 21
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56qwh15ff16",
+   "scenarioId": "S7",
+   "title": "Old delivery replayed",
+   "kind": "webhook",
+   "rules": [
+    "I6"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP3",
+   "startedAt": "2026-11-12T06:03:38.034Z",
+   "durationMs": 444,
+   "status": "amber",
+   "headline": "The old event was accepted (HTTP 2xx) but ignored as already processed. Nothing changed.",
+   "verdicts": [
+    {
+     "rule": "I6",
+     "status": "warn",
+     "message": "The old event was accepted (HTTP 2xx) but ignored as already processed. Nothing changed.",
+     "evidence": {
+      "status": 200
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "completed (old replay)",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 68
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-A92E987FFC9C7F01F",
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56r8uee098f",
+   "scenarioId": "D1",
+   "title": "Dispute opened before shipping",
+   "kind": "webhook",
+   "rules": [
+    "I8"
+   ],
+   "targetId": "ab-plugin-off",
+   "recordingId": "ab-plugin-off-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:38.478Z",
+   "durationMs": 612,
+   "status": "red",
+   "headline": "The order was shipped although a dispute was already open",
+   "verdicts": [
+    {
+     "rule": "I8",
+     "status": "fail",
+     "message": "The order was shipped although a dispute was already open",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-C5C0072252522C9C7",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "F340934DB80B3F35A",
+      "status": "CREATED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "643D569B58E46B44C",
+        "amount": "12.00",
+        "status": "REFUNDED"
+       }
+      ]
+     }
+    },
+    {
+     "label": "dispute",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 44
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "ok": true
+     },
+     "ms": 18
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-C5C0072252522C9C7",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-C5C0072252522C9C7"
+    ]
+   },
+   "ledger": {
+    "id": "F340934DB80B3F35A",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "643D569B58E46B44C",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "A81BA35510136E8AD",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "E23B79BA76D8DE95F",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A/capture",
+     "requestId": "capture-F340934DB80B3F35A",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/F340934DB80B3F35A",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56rq236f3de",
+   "scenarioId": "S0",
+   "title": "Control: the recorded purchase, in order",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:39.098Z",
+   "durationMs": 328,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 61
+    },
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 20
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56rz6e6108e",
+   "scenarioId": "S1",
+   "title": "Same event twice",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:39.426Z",
+   "durationMs": 382,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 21
+    },
+    {
+     "label": "completed (repeat)",
+     "status": 200,
+     "body": {
+      "duplicate": true
+     },
+     "ms": 10
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56s9sbda4f2",
+   "scenarioId": "S2",
+   "title": "Same event twice, at the same time",
+   "kind": "webhook",
+   "rules": [
+    "I1"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:39.808Z",
+   "durationMs": 417,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed (copy 2)",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 15
+    },
+    {
+     "label": "completed (copy 1)",
+     "status": 200,
+     "body": {
+      "duplicate": true
+     },
+     "ms": 17
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56sle8d7a99",
+   "scenarioId": "S3",
+   "title": "Capture event before the approval event",
+   "kind": "webhook",
+   "rules": [
+    "I1",
+    "I4"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:40.226Z",
+   "durationMs": 437,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    },
+    {
+     "rule": "I4",
+     "status": "pass",
+     "message": "Same final state as the in-order run",
+     "evidence": {
+      "after": {
+       "status": "COMPLETED",
+       "shipped": 1,
+       "refunds": [],
+       "events": 1
+      }
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 15
+    },
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 14
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56sxj01f70d",
+   "scenarioId": "S4",
+   "title": "Approval event races the return path",
+   "kind": "webhook",
+   "rules": [
+    "I1",
+    "I4"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:40.663Z",
+   "durationMs": 313,
+   "status": "green",
+   "headline": "Shipped 1 time, after the capture",
+   "verdicts": [
+    {
+     "rule": "I1",
+     "status": "pass",
+     "message": "Shipped 1 time, after the capture",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    },
+    {
+     "rule": "I4",
+     "status": "pass",
+     "message": "Same final state as the in-order run",
+     "evidence": {
+      "after": {
+       "status": "COMPLETED",
+       "shipped": 1,
+       "refunds": [],
+       "events": 1
+      }
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "approved",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 69
+    },
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 15
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56t68470784",
+   "scenarioId": "S5",
+   "title": "Second partial refund event never arrives",
+   "kind": "webhook",
+   "rules": [
+    "I5"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP2",
+   "startedAt": "2026-11-12T06:03:40.976Z",
+   "durationMs": 6267,
+   "status": "red",
+   "headline": "After 6s PayPal records 12.00 refunded, the shop still books 4.00",
+   "verdicts": [
+    {
+     "rule": "I5",
+     "status": "fail",
+     "message": "After 6s PayPal records 12.00 refunded, the shop still books 4.00",
+     "evidence": {
+      "paypal": [
+       {
+        "id": "3F4E5CC0D301A7092",
+        "amount": "4.00",
+        "status": "COMPLETED"
+       },
+       {
+        "id": "A9A0BCAD0DE0F2DAC",
+        "amount": "8.00",
+        "status": "COMPLETED"
+       }
+      ],
+      "shop": [
+       {
+        "id": "3F4E5CC0D301A7092",
+        "amount": "4.00"
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "refund2 (dropped, never delivered)",
+     "status": 0,
+     "dropped": true
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "PARTIALLY_REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "PARTIALLY_REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     },
+     {
+      "text": "refunded 4.00",
+      "flag": false
+     },
+     {
+      "text": "books 4.00 of 12.00",
+      "flag": true
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56y0b834743",
+   "scenarioId": "S5b",
+   "title": "Two partial refunds, 4.00 then 8.00",
+   "kind": "webhook",
+   "rules": [
+    "I2"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP1",
+   "startedAt": "2026-11-12T06:03:47.244Z",
+   "durationMs": 305,
+   "status": "red",
+   "headline": "PayPal refunds 12.00 (2), shop books 0.00 (0)",
+   "verdicts": [
+    {
+     "rule": "I2",
+     "status": "fail",
+     "message": "PayPal refunds 12.00 (2), shop books 0.00 (0)",
+     "evidence": {
+      "shop": [],
+      "paypal": [
+       {
+        "id": "3F4E5CC0D301A7092",
+        "amount": "4.00",
+        "status": "COMPLETED"
+       },
+       {
+        "id": "A9A0BCAD0DE0F2DAC",
+        "amount": "8.00",
+        "status": "COMPLETED"
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "refund1",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 60
+    },
+    {
+     "label": "refund2",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 17
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     },
+     {
+      "text": "books 0.00 of 12.00",
+      "flag": true
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56y8t17d376",
+   "scenarioId": "S6",
+   "title": "Forged events",
+   "kind": "webhook",
+   "rules": [
+    "I3"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP3",
+   "startedAt": "2026-11-12T06:03:47.549Z",
+   "durationMs": 395,
+   "status": "green",
+   "headline": "Rejected 3 forged events (state unchanged)",
+   "verdicts": [
+    {
+     "rule": "I3",
+     "status": "pass",
+     "message": "Rejected 3 forged events (state unchanged)",
+     "evidence": {
+      "statuses": [
+       {
+        "label": "body changed after signing",
+        "status": 401
+       },
+       {
+        "label": "simulator event (webhook id \"WEBHOOK_ID\")",
+        "status": 401
+       },
+       {
+        "label": "signed with a certificate that is not PayPal's",
+        "status": 401
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "body changed after signing",
+     "status": 401,
+     "body": {
+      "error": "signature verification failed"
+     },
+     "ms": 83
+    },
+    {
+     "label": "simulator event (webhook id \"WEBHOOK_ID\")",
+     "status": 401,
+     "body": {
+      "error": "signature verification failed"
+     },
+     "ms": 11
+    },
+    {
+     "label": "signed with a certificate that is not PayPal's",
+     "status": 401,
+     "body": {
+      "error": "signature verification failed"
+     },
+     "ms": 14
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56yjt7bb4ce",
+   "scenarioId": "S7",
+   "title": "Old delivery replayed",
+   "kind": "webhook",
+   "rules": [
+    "I6"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP3",
+   "startedAt": "2026-11-12T06:03:47.945Z",
+   "durationMs": 361,
+   "status": "amber",
+   "headline": "The old event was accepted (HTTP 2xx) but ignored as already processed. Nothing changed.",
+   "verdicts": [
+    {
+     "rule": "I6",
+     "status": "warn",
+     "message": "The old event was accepted (HTTP 2xx) but ignored as already processed. Nothing changed.",
+     "evidence": {
+      "status": 200
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "completed (old replay)",
+     "status": 200,
+     "body": {
+      "duplicate": true
+     },
+     "ms": 87
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "REFUNDED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00"
+     }
+    ],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  },
+  {
+   "id": "run_mwd56ytubd5306",
+   "scenarioId": "D1",
+   "title": "Dispute opened before shipping",
+   "kind": "webhook",
+   "rules": [
+    "I8"
+   ],
+   "targetId": "ab-plugin-on",
+   "recordingId": "ab-plugin-on-demo",
+   "startPoint": "SP0",
+   "startedAt": "2026-11-12T06:03:48.306Z",
+   "durationMs": 565,
+   "status": "red",
+   "headline": "The order was shipped although a dispute was already open",
+   "verdicts": [
+    {
+     "rule": "I8",
+     "status": "fail",
+     "message": "The order was shipped although a dispute was already open",
+     "evidence": {
+      "shipments": [
+       {
+        "id": "1",
+        "at_event": "WH-369D2401F7C62046A",
+        "capture_recorded": true
+       }
+      ]
+     }
+    }
+   ],
+   "deliveries": [
+    {
+     "label": "return path",
+     "status": 200,
+     "body": {
+      "orderId": "84C775090161CE91B",
+      "status": "REFUNDED",
+      "on_hold": false,
+      "captures": [
+       {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "amount": "12.00"
+       }
+      ]
+     }
+    },
+    {
+     "label": "dispute",
+     "status": 200,
+     "body": {
+      "ignored": true
+     },
+     "ms": 33
+    },
+    {
+     "label": "completed",
+     "status": 200,
+     "body": {
+      "processed": true,
+      "shipped": true
+     },
+     "ms": 19
+    }
+   ],
+   "resetOk": true,
+   "notes": [],
+   "stateStart": {
+    "exists": true,
+    "status": "CREATED",
+    "on_hold": false,
+    "fulfilled_count": 0,
+    "shipments": [],
+    "captures": [],
+    "refunds": [],
+    "processed_event_ids": []
+   },
+   "stateAfter": {
+    "exists": true,
+    "status": "COMPLETED",
+    "on_hold": false,
+    "fulfilled_count": 1,
+    "shipments": [
+     {
+      "id": "1",
+      "at_event": "WH-369D2401F7C62046A",
+      "capture_recorded": true
+     }
+    ],
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00"
+     }
+    ],
+    "refunds": [],
+    "processed_event_ids": [
+     "WH-369D2401F7C62046A"
+    ]
+   },
+   "ledger": {
+    "id": "84C775090161CE91B",
+    "status": "COMPLETED",
+    "amount": "12.00",
+    "captures": [
+     {
+      "id": "0EA7B7F3E2A9E3DA6",
+      "amount": "12.00",
+      "status": "REFUNDED"
+     }
+    ],
+    "refunds": [
+     {
+      "id": "3F4E5CC0D301A7092",
+      "amount": "4.00",
+      "status": "COMPLETED"
+     },
+     {
+      "id": "A9A0BCAD0DE0F2DAC",
+      "amount": "8.00",
+      "status": "COMPLETED"
+     }
+    ],
+    "source": "client.orders.getOrder"
+   },
+   "ledgerFinalNote": "PayPal records cannot be rewound. A handler that re-reads PayPal sees the final state, not the start point.",
+   "proxyLog": [
+    {
+     "method": "POST",
+     "path": "/v1/oauth2/token",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v2/checkout/orders/84C775090161CE91B/capture",
+     "requestId": "capture-84C775090161CE91B",
+     "sdkKey": null,
+     "status": 422,
+     "cut": false
+    },
+    {
+     "method": "GET",
+     "path": "/v2/checkout/orders/84C775090161CE91B",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    },
+    {
+     "method": "POST",
+     "path": "/v1/notifications/verify-webhook-signature",
+     "requestId": null,
+     "sdkKey": null,
+     "status": 200,
+     "cut": false
+    }
+   ],
+   "timeline": {
+    "paypal": [
+     {
+      "text": "approved"
+     },
+     {
+      "text": "captured 12.00"
+     },
+     {
+      "text": "refund 4.00"
+     },
+     {
+      "text": "refund 8.00"
+     }
+    ],
+    "shop": [
+     {
+      "text": "shipped x1",
+      "flag": false
+     }
+    ]
+   },
+   "proxyStory": null,
+   "precomputed": true
+  }
+ ]
+}

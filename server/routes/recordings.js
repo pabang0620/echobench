@@ -4,13 +4,21 @@ import { HttpError, idSchema, parse } from '../http.js'
 
 const ok = (res, data) => res.json({ success: true, data })
 
+// The first recording is the one the screen opens with: in sandbox mode the newest sandbox recording, else the built-in one.
+function sortForMode(list, mode) {
+  if (mode === 'mock') return list
+  const fromSandbox = list.filter((r) => !String(r.source).endsWith('mock')).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+  return [...fromSandbox, ...list.filter((r) => String(r.source).endsWith('mock'))]
+}
+
 // Recordings: list, inspect, and (sandbox) record a new one. Bodies stay out of list/detail
 // unless asked for, they are the exact bytes PayPal sent.
 export function recordingsRouter(lab) {
   const router = express.Router()
   const wrap = (fn) => (req, res, next) => fn(req, res).catch(next)
 
-  router.get('/recordings', (_req, res) => ok(res, lab.store.listRecordings()))
+  // Recordings made against an agent-built handler (R2) only feed the A/B tab: their start points are that handler's database.
+  router.get('/recordings', (_req, res) => ok(res, sortForMode(lab.store.listRecordings().filter((r) => !String(r.targetId).startsWith('ab-')), lab.cfg.mode)))
 
   router.get('/recordings/:id', (req, res) => {
     const rec = lab.store.getRecording(parse(idSchema, req.params.id))

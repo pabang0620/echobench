@@ -17,6 +17,8 @@ export const mockKeyPem = () => readFileSync(path.join(KEY_DIR, 'paypal-mock.key
 const cents = (value) => Math.round(Number(value) * 100)
 const money = (c) => (c / 100).toFixed(2)
 const paypalId = () => randomBytes(9).toString('hex').toUpperCase().slice(0, 17)
+// How long the stand-in holds a refund "in progress" (see refundsInFlight).
+const REFUND_PROCESSING_MS = 40
 
 export function createMockPaypal({ webhookId = 'WH-MOCK-0001', resendResigns = true } = {}) {
   const state = {
@@ -24,6 +26,9 @@ export function createMockPaypal({ webhookId = 'WH-MOCK-0001', resendResigns = t
     captures: new Map(),
     refunds: new Map(),
     requestIds: new Map(),
+    // Captures with a refund being processed. Measured on the sandbox: a second refund that overlaps one in
+    // progress on the same capture is answered 409 PREVIOUS_REQUEST_IN_PROGRESS.
+    refundsInFlight: new Set(),
     events: [],
     webhooks: [],
     delivery: true,
@@ -215,7 +220,12 @@ export function createMockPaypal({ webhookId = 'WH-MOCK-0001', resendResigns = t
         const body = await readJson(req)
         const requestId = req.headers['paypal-request-id']
         const memoKey = requestId ? `refund:${parts[3]}:${requestId}` : ''
-        if (memoKey && state.requestIds.has(memoKey)) return reply(res, 201, refundView(state.refunds.get(state.requestIds.get(memoKey))))
+        // Measured on the sandbox (VERIFY V5): a repeat with the same PayPal-Request-Id answers 200 with the stored refund.
+        if (memoKey && state.requestIds.has(memoKey)) return reply(res, 200, refundView(state.refunds.get(state.requestIds.get(memoKey))))
+        if (state.refundsInFlight.has(record.id)) return fail(res, 409, 'RESOURCE_CONFLICT', 'PREVIOUS_REQUEST_IN_PROGRESS', 'The server has detected a conflict while processing this request.')
+        state.refundsInFlight.add(record.id)
+        await new Promise((resolve) => setTimeout(resolve, REFUND_PROCESSING_MS))
+        state.refundsInFlight.delete(record.id)
         const amount = body.amount?.value ? String(body.amount.value) : record.amount
         if (refundedCents(record.id) + cents(amount) > cents(record.amount)) return fail(res, 422, 'UNPROCESSABLE_ENTITY', 'REFUND_AMOUNT_EXCEEDED', 'The refund amount must be less than or equal to the capture amount that has not yet been refunded.')
         const refund = { id: paypalId(), captureId: record.id, amount, createdAt: new Date().toISOString() }

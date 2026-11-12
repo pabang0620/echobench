@@ -10,8 +10,11 @@ export function importPrecomputed(lab) {
   const file = path.join(APP_ROOT, 'builtin', 'precomputed.json')
   if (!existsSync(file)) return 0
   const data = JSON.parse(readFileSync(file, 'utf8'))
+  // R2 plugin off / on runs (scripts/run-ab.js), shown in the A/B tab.
+  const abFile = path.join(APP_ROOT, 'builtin', 'ab-runs.json')
+  const abRuns = existsSync(abFile) ? JSON.parse(readFileSync(abFile, 'utf8')).runs : []
   let added = 0
-  for (const run of data.runs) {
+  for (const run of [...data.runs, ...abRuns]) {
     if (!lab.store.getRun(run.id)) {
       lab.store.saveRun(run)
       added += 1

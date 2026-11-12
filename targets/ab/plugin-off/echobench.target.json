@@ -1,0 +1,11 @@
+{
+  "label": "Agent-built handler (plugin off)",
+  "group": "plugin-off",
+  "command": "node",
+  "args": ["--no-warnings", "dist/server.js"],
+  "paths": {
+    "webhook": "/webhooks/paypal",
+    "returnPath": "/checkout/return",
+    "refund": { "admin": "/admin/refund", "support": "/support/refund" }
+  }
+}

@@ -12,7 +12,7 @@ export default function MatrixTab({ recordingId, refreshKey, onOpenRun }) {
   const columns = matrix.columns.filter((c) => Object.keys(c.results).length > 0 || c.group)
   return (
     <div>
-      <p className="muted small">Same recording, same scenarios, every target that has been run. Agent-built handlers (plugin off / on) and EverShop appear here after their runs; see VERIFY.md R1 and R2.</p>
+      <p className="muted small">Same purchase, same scenarios, every target that has been run. The two agent-built handlers are R2: one request text given twice to Claude Code (claude-sonnet-5-5, 2026-11-12), once without and once with the APIMatic Context Plugin 0.4.1 loaded, code not edited afterwards (logs in targets/ab/*/GENERATION_LOG.md). Each handler keeps its own database, so each is run on its own recording of the same purchase on the local PayPal stand-in. In the plugin-on run the model did not open any plugin skill and both handlers call PayPal REST with fetch, so this table compares two handlers, it does not prove a plugin effect. EverShop (R1) is not run.</p>
       <div className="table-wrap">
         <table className="table table--matrix">
           <thead><tr><th>Scenario</th>{columns.map((c) => <th key={c.id}>{c.label}</th>)}</tr></thead>

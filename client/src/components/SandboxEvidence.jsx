@@ -15,7 +15,7 @@ export default function SandboxEvidence() {
       <ul className="evidence-list">
         {data.items.map((item) => (
           <li key={`${item.id}-${item.claim}`}>
-            <span className={`badge badge--${item.result === 'PASS' ? 'good' : 'warn'}`}>{item.result}</span> <strong>{item.id}</strong> {item.claim}
+            <span className={`badge badge--${item.result === 'PASS' || item.result === 'GREEN' ? 'good' : 'warn'}`}>{item.result}</span> <strong>{item.id}</strong> {item.claim}
             <div className="small muted">{item.evidence}</div>
           </li>
         ))}

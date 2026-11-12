@@ -1,6 +1,6 @@
 # EchoBench
 
-**A replay lab for PayPal webhooks.** It can record the PayPal sandbox deliveries that reach it (recording real deliveries needs a public URL and has not been run yet, VERIFY.md V1; the built-in recording comes from a local PayPal stand-in). The SDK reads, the refund retry and a contract payment have been measured on the real sandbox (V4, V5, V8, V11, see below). It shakes the recorded deliveries (duplicated, at the same time, reordered, dropped, replayed late, forged), and judges your handler by comparing the shop's books with PayPal's own records. When something fails, an AI step explains why and writes a patch that EchoBench itself type-checks and re-runs on a copy before you can apply it. The default run, with no keys, uses a mock model for that step and says so on screen. Two real runs of that step (Claude Sonnet through a local Claude Code account, 2026-11-12, on scenarios S1 and S5b) ship with the app and replay without a key as "Recorded run".
+**A replay lab for PayPal webhooks.** It can record the PayPal sandbox deliveries that reach it (recording real deliveries needs a public URL and has not been run yet, VERIFY.md V1; the built-in recording comes from a local PayPal stand-in). The SDK reads, the refund retry and a contract payment have been measured on the real sandbox (V4, V5, V8, V11), and the Contract tab's two refund promises were run on real sandbox payments, green on the fixed shop and red on the contrast copy (V5b, see below). It shakes the recorded deliveries (duplicated, at the same time, reordered, dropped, replayed late, forged), and judges your handler by comparing the shop's books with PayPal's own records. When something fails, an AI step explains why and writes a patch that EchoBench itself type-checks and re-runs on a copy before you can apply it. The default run, with no keys, uses a mock model for that step and says so on screen. Two real runs of that step (Claude Sonnet through a local Claude Code account, 2026-11-12, on scenarios S1 and S5b) ship with the app and replay without a key as "Recorded run".
 
 Built for the PayPal AI Hackathon 2026. Target prize: Best Use of APIMatic.
 
@@ -31,9 +31,18 @@ With no keys, PayPal is a **local stand-in** (response shapes follow the Orders 
 2. Press **Shake all**. The first screen shows two lines, PayPal's records on top and the shop's books under them, with the broken cells in red, and three rows: *the mug shipped twice*, *PayPal refunded 12.00 but the shop books 8.00*, *forged events were rejected*.
 3. Click the first row. The card shows each rule's verdict and the evidence. Press **Explain and fix**: without a key this replays a recorded real Claude Sonnet run (labeled "Recorded run", see "The AI step"; the S5b row has its own recording). The AI step reads the failure, the recorded event and the handler, tries a patch on a copy, runs `tsc`, then re-runs the scenario and all others on the copy. Read the plain-words cause and the diff.
 4. Press **Apply to the MugShop working copy**, then **Shake all** again. It goes green and the target is now called **MugShop (your patched copy)**. (The repository's source is never edited; the working copy is under `data/workspace`.) To go back to the red start, press **Reset to planted bugs** next to Shake all: one click restores the three bugs. A hosted copy can start every process from the planted source with `RESET_WORKSPACE_ON_START=1`.
-5. Open the **Contract** tab. At the top it shows what was **measured on the real PayPal sandbox on 2026-11-12** (labeled "not re-run now"), then a side-by-side of the plan's promises on MugShop and on **MugShop (contract removed, contrast)**: without the plan's refund claim the same two simultaneous refund requests become two PayPal refunds (red), with it one (green). Below that it reads `paypal-plan.md` at the app root (written to the APIMatic plugin's plan layout) and shows, row by row, what EchoBench proved. Press **Run C-UNK**: a confirmation card shows amount, capture id and who runs it. After Run, the proxy forwards the refund to PayPal (the local stand-in in the default run) and cuts the reply. The result card shows what the proxy saw without opening anything: the same `PayPal-Request-Id` on both sends, the SDK's different `Idempotency-Key`, and one refund at PayPal. **Run C-UNK-CAPTURE** does the same for `captureOrder` on the stand-in.
+5. Open the **Contract** tab. At the top it shows what was **measured on the real PayPal sandbox on 2026-11-12** (labeled "not re-run now"), then a side-by-side of the plan's promises on MugShop and on **MugShop (contract removed, contrast)**: without the plan's refund claim the same refund asked from the admin page and then from the support desk becomes two PayPal refunds (red), with it one (green); the same pair was run on real sandbox payments with the same result (V5b). Below that it reads `paypal-plan.md` at the app root (written to the APIMatic plugin's plan layout) and shows, row by row, what EchoBench proved. Press **Run C-UNK**: a confirmation card shows amount, capture id and who runs it. After Run, the proxy forwards the refund to PayPal (the local stand-in in the default run) and cuts the reply. The result card shows what the proxy saw without opening anything: the same `PayPal-Request-Id` on both sends, the SDK's different `Idempotency-Key`, and one refund at PayPal. **Run C-UNK-CAPTURE** does the same for `captureOrder` on the stand-in.
 6. The **Recording** tab has **Start recording** and **Finish recording** buttons (the same API the scripts use). In the default run PayPal is the stand-in, so the built-in recording is the one to use; real recordings need VERIFY.md V1.
-7. **Inbound events table** is EchoBench's own proposal for the webhooks the plugin's table does not cover; for MugShop it is filled in from MugShop's code (the tables and the handler lines that reject a second event). **A/B and EverShop** fills in after the agent-built handlers and EverShop have been run (VERIFY.md R1, R2).
+7. **Inbound events table** is EchoBench's own proposal for the webhooks the plugin's table does not cover; for MugShop it is filled in from MugShop's code (the tables and the handler lines that reject a second event). **A/B and EverShop** shows R2: two handlers generated on 2026-11-12 by Claude Code from one request text, once without and once with the APIMatic Context Plugin loaded, each run on its own recording of the same purchase (local stand-in). The model did not open a plugin skill in the plugin-on run, so the two columns compare two handlers, not the plugin. EverShop (R1) is not run.
+
+## Sandbox demo mode
+
+The default is the local stand-in (no keys). To run the real sandbox flow, for example on a deployed server:
+
+1. Put sandbox `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` in `.env` (and `FORCE_MOCK=0`). The header chip then says "PayPal: sandbox"; the server refuses any `PAYPAL_BASE_URL` that is not a PayPal sandbox host.
+2. Make sandbox contract payments: `ECHOBENCH_ALLOW_SANDBOX=1 BUYER_RUN=<a script that puts SANDBOX_BUYER_EMAIL and SANDBOX_BUYER_PASSWORD in the environment> npm run sandbox:contract -- mugshop-reference:C-UNK mugshop-contrast:C-DUP`. For each pair it buys one mug through MugShop, approves it as the sandbox buyer in headless Chromium (`scripts/approve-buyer.py`, Python Playwright), captures it on MugShop's return path, saves that capture as the contract payment of a new recording and runs the scenario once. Each run refunds 4.00 or 8.00 of fake sandbox money.
+3. Start the app. In sandbox mode the recording picker opens on the newest sandbox recording; the Contract tab's Run C-UNK / Run C-DUP buttons (after the confirmation card) refund 4.00 from that recording's real capture and show the real refund ids.
+4. Webhook scenarios (S0 to D1) need recorded real deliveries, which need a public URL (VERIFY V1). Until then they answer `na` on a sandbox recording, and a recording made on the stand-in answers `na` in sandbox mode instead of failing.
 
 ## Sandbox evidence
 
@@ -42,11 +51,12 @@ Measured on the PayPal sandbox on 2026-11-12 (VERIFY.md "Sandbox results"; the a
 | Id | Result | What it showed |
 |---|---|---|
 | V4 | PASS | The SDK read equals the plain REST read of the same order; MugShop's SDK capture returns the captures. Found: `captureOrder` without a body gets 415 |
-| V5 | PASS (first half) | The same `PayPal-Request-Id` returned the same refund id (201, then 200), one refund on the order |
+| V5 | PASS | The same `PayPal-Request-Id` returned the same refund id (201, then 200), one refund on the order |
+| V5b | 5 runs | Contract tab promises on real sandbox payments through the reply-cutting proxy (`npm run sandbox:contract`). C-UNK: MugShop GREEN (cut reply, same `PayPal-Request-Id` re-sent, PayPal answered 200 with refund 8DH51725TN890892T, one refund), contrast RED (refund 98G44114MT935673U at PayPal, the shop reported failure). C-DUP: MugShop GREEN (one refund 3R834948FC525115M), contrast RED (two refunds 0YV80846AW8891156 and 2TE88129DT787735B for one request). Found: two refund requests that overlap at PayPal get 409 `PREVIOUS_REQUEST_IN_PROGRESS` from the sandbox, so C-DUP now sends them one after the other |
 | V8 | PASS | A real contract payment recorded for Contract tab runs |
 | V11 | PASS | SDK smoke reads work; a made-up order id decodes as a typed PayPal 404 |
 
-Not run on the sandbox: V1 to V3, V6, V7, V9 (public URL), V5 second half (C-UNK through the proxy). V10 (the AI step) passed in account mode, which is not a sandbox item.
+Not run on the sandbox: V1 to V3, V6, V7, V9 (public URL). The webhook scenarios therefore still run on the local stand-in's recording. V10 (the AI step) passed in account mode, which is not a sandbox item.
 
 ## What each scenario does
 
@@ -64,7 +74,7 @@ Every scenario first stops the target, restores its database from a saved **star
 | S6 | SP3 final | body changed after signing; simulator-style event; event signed by a certificate that is not PayPal's | I3 |
 | S7 | SP3 | original capture event delivered again | I6 |
 | D1 | SP0 | dispute event before the capture event | I8 |
-| C-DUP | SPC a captured, unrefunded payment | the same refund from two code paths at once | I7 |
+| C-DUP | SPC a captured, unrefunded payment | the same refund from the admin page, then from the support desk | I7 |
 | C-UNK | SPC | refund sent, reply cut | I7 |
 | C-DUP-CAPTURE | SP0 | two return paths at once (shop side only) | I7 |
 | C-UNK-CAPTURE | SP0 | capture sent, reply cut, the app must read the order back (local stand-in only: the order is rewound for the run and put back; `na` on the sandbox) | I7 |
@@ -154,7 +164,7 @@ See `.env.example`. All optional.
 
 ## What is not done yet
 
-Listed in `VERIFY.md` with how to run each. Not run yet: V1 to V3, V6, V7, V9 (they need a public URL), C-UNK through the proxy on the sandbox (V5 second half), the hosted-API path of the AI step, R1 (EverShop) and R2 (plugin off / on handlers). Until they are run, the built-in results come from the local stand-in and say so. Next steps after this submission: R1, a resend mode (after V2 says how fast and how signed a resend is), and a CI check.
+Listed in `VERIFY.md` with how to run each. Not run yet: V1 to V3, V6, V7, V9 (they need a public URL), the hosted-API path of the AI step and R1 (EverShop). R2 was run once (see the A/B tab); the plugin-on model did not use the plugin's skills. Until they are run, the built-in results come from the local stand-in and say so. Next steps after this submission: R1, a resend mode (after V2 says how fast and how signed a resend is), and a CI check.
 
 ## License
 

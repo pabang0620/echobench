@@ -1,6 +1,16 @@
 # R2: the plugin off / plugin on measurement
 
-Plan item 11. The same request is given to Claude Code twice, once without the APIMatic Context Plugin and once with it. Nobody edits the results. EchoBench runs both handlers. **Nothing here has been generated yet**, and this build did not install the plugin or run Claude Code.
+Plan item 11. The same request is given to Claude Code twice, once without the APIMatic Context Plugin and once with it. Nobody edits the results. EchoBench runs both handlers.
+
+## What was run (2026-11-12)
+
+- Request: `REQUEST.md` in this folder, the text below plus the exact routes and JSON shapes EchoBench drives (the checkout, return, refund and health routes) and the adapter contract, identical in both runs.
+- `claude -p "$(cat REQUEST.md)" --model claude-sonnet-5-5 --setting-sources "" --strict-mcp-config --no-session-persistence --permission-mode bypassPermissions --output-format stream-json --verbose`, through the local Claude Code login with `ANTHROPIC_API_KEY` removed from the environment, each in an empty folder outside any project (no CLAUDE.md, no user settings or skills, no MCP servers). The plugin-on run adds `--plugin-dir ~/.claude/plugins/cache/context-plugins/paypal/0.4.1` (the installed plugin). That flag is the only difference.
+- `plugin-off/` and `plugin-on/` hold the generated code as it was left (only `node_modules` was reinstalled with `npm ci`), `GENERATION_LOG.md` (readable transcript) and `generation.stream.jsonl` (raw stream), plus the `echobench.target.json` written afterwards.
+- What happened: the plugin-on session listed the plugin's 29 skills, and the model did not invoke any of them. Both handlers call PayPal REST with `fetch`, not the APIMatic SDK. No plugin plan (`paypal-plan.md`) was produced, so the header comparison in step 5 could not be done.
+- To run the two handlers again on a fresh clone: `npm ci` inside `targets/ab/plugin-off` (it uses better-sqlite3; plugin-on needs no packages), then `node scripts/run-ab.js` (add `--record` to record the purchase again).
+- `node scripts/run-ab.js --record` records the built-in purchase against each handler on the local PayPal stand-in (`builtin/ab-plugin-*-demo`, made by driving that handler) and runs S0 to D1 on it. Results in `builtin/ab-runs.json`, shown in the A/B tab. Both: green S0, S1, S2, S3, S4, S6; amber S7; red S5, S5b, D1.
+- Reading: the same model with and without the plugin produced handlers that fail the same three scenarios. Because the plugin's skills were not opened, this does not measure the plugin; a run in which the agent is told to use them would be a different request and is not published as A/B.
 
 ## The one request (copy it exactly, same model, same text both times)
 

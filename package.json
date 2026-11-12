@@ -14,7 +14,9 @@
     "test": "node --test --test-concurrency=1 test/*.test.js",
     "record-live": "node scripts/record-live.js",
     "verify-model": "node scripts/verify-model.js",
-    "demo:video": "node scripts/demo-video.js"
+    "demo:video": "node scripts/demo-video.js",
+    "sandbox:contract": "node scripts/sandbox-contract.js",
+    "ab": "node scripts/run-ab.js"
   },
   "engines": {
     "node": ">=22.18"

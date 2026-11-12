@@ -2,7 +2,7 @@
   "measuredAt": "2026-11-12",
   "environment": "PayPal sandbox (api-m.sandbox.paypal.com)",
   "label": "Measured on the PayPal sandbox on 2026-11-12. Not re-run now: these are recorded results, the ids are the sandbox's own.",
-  "source": "VERIFY.md, Sandbox results (scripts/verify-sandbox.js V4, V5, V8 and scripts/sdk-smoke.js V11)",
+  "source": "VERIFY.md, Sandbox results (scripts/verify-sandbox.js V4, V5, V8, scripts/sdk-smoke.js V11, scripts/sandbox-contract.js V5b)",
   "items": [
     {
       "id": "V4",
@@ -39,11 +39,41 @@
       "claim": "SDK smoke: reads work with the sandbox credential and a 404 decodes as a PayPal error",
       "result": "PASS",
       "evidence": "getOrder ok (COMPLETED, 12.00), getCapturedPayment ok (COMPLETED), a made-up order id gave a typed 404 decoded through the SDK Error model, OAuth token request ok. No 403 on any operation."
+    },
+    {
+      "id": "V5b",
+      "claim": "C-UNK on MugShop (reference fix): refund sent through the proxy, PayPal's reply cut",
+      "result": "GREEN",
+      "evidence": "GREEN: The reply was cut; the app re-sent the same PayPal-Request-Id and settled with one refund. Order 6NY987535G7169516, capture 4VF768579P901433T, refunds at PayPal: 8DH51725TN890892T 4.00. Refund calls seen by the proxy: 201 (reply cut) id 30adbb69; 200 id 30adbb69."
+    },
+    {
+      "id": "V5b",
+      "claim": "C-UNK on MugShop (contract removed, contrast): refund sent through the proxy, PayPal's reply cut",
+      "result": "RED",
+      "evidence": "RED: PayPal refunded but the reply was cut: it reported the refund as failed; PayPal refunds 1, the shop books 0. Order 5DW328583D433311P, capture 25V12368MD2316333, refunds at PayPal: 98G44114MT935673U 4.00. Refund calls seen by the proxy: 201 (reply cut) id 60ccef91."
+    },
+    {
+      "id": "V5b",
+      "claim": "C-DUP (first version, both requests at the same moment) on MugShop (contract removed, contrast)",
+      "result": "GREEN",
+      "evidence": "GREEN: Two simultaneous refund requests became one PayPal refund. Order 0MX82598V4705481S, capture 15977184649549306, refunds at PayPal: 9S489640RY763513K 4.00. Refund calls seen by the proxy: 409 id cfa083f7; 201 id 89de04e1. PayPal itself answered the overlapping second request 409 PREVIOUS_REQUEST_IN_PROGRESS, so C-DUP now sends the two requests one after the other (the local stand-in copies the 409)."
+    },
+    {
+      "id": "V5b",
+      "claim": "C-DUP on MugShop (reference fix): the same 4.00 refund from the admin page, then from the support desk",
+      "result": "GREEN",
+      "evidence": "GREEN: The same refund from two code paths became one PayPal refund. Order 8YY02244S83835501, capture 1D473549NR724120R, refunds at PayPal: 3R834948FC525115M 4.00. Refund calls seen by the proxy: 201 id 21f12903."
+    },
+    {
+      "id": "V5b",
+      "claim": "C-DUP on MugShop (contract removed, contrast): the same 4.00 refund from the admin page, then from the support desk",
+      "result": "RED",
+      "evidence": "RED: PayPal refunds: 2 for one request, the shop books 2. Order 8M9957751S5797610, capture 0J959859A6639224B, refunds at PayPal: 0YV80846AW8891156 4.00, 2TE88129DT787735B 4.00. Refund calls seen by the proxy: 201 id f3aee54e; 201 id 607d0a46."
     }
   ],
   "notRunOnTheSandbox": [
-    "C-UNK through the proxy against the sandbox (V5 second half, a person presses Run)",
     "Recording real webhook deliveries (V1 to V3, V6, V7, V9: they need a public URL)",
+    "The webhook scenarios S0 to D1 on real deliveries (they need a recording from V1; until then they run on the local stand-in)",
     "The PAYPAL_CLIENT_IMPL=rest rerun and the paypal-debug-id header check on an error reply (V4 remainder)"
   ]
 }

@@ -61,7 +61,15 @@ export async function runScenario({ lab, scenario, recording, target }) {
   const isContract = scenario.startPoint === 'SPC'
   const start = isContract ? { ...recording.contract, fingerprint: recording.contract.fingerprint } : recording.startPoints[scenario.startPoint]
   const orderId = isContract ? recording.contract.orderId : recording.orderId
-  if (!start) return finish({ status: 'error', headline: `The recording has no start point ${scenario.startPoint}` })
+  if (!start) {
+    const contractOnly = !recording.deliveries.length && recording.contract
+    return finish({ status: contractOnly ? 'na' : 'error', headline: contractOnly ? `This recording holds only a contract payment, no recorded deliveries, so ${scenario.id} cannot run on it (recording real deliveries needs a public URL, VERIFY V1)` : `The recording has no start point ${scenario.startPoint}` })
+  }
+  // A recording made on the local stand-in names orders the sandbox does not have (and the other way round).
+  const madeOnStandIn = String(recording.source).endsWith('mock')
+  if (madeOnStandIn !== (lab.cfg.mode === 'mock')) {
+    return finish({ status: 'na', headline: madeOnStandIn ? 'This recording was made on the local PayPal stand-in; its order does not exist on the sandbox. Pick a sandbox recording, or start without sandbox credentials' : 'This recording was made on the PayPal sandbox; the local stand-in does not know its order. Start with sandbox credentials to run it' })
+  }
 
   // 1. reset
   await target.restore(path.join(recording.dir, start.file))
@@ -154,9 +162,13 @@ export async function runScenario({ lab, scenario, recording, target }) {
   const ledgerNew = ledger.refunds.filter((r) => !knownBefore.has(r.id))
   const proxyLog = lab.proxy.log.map((p) => ({ method: p.method, path: p.path, requestId: p.requestId, sdkKey: p.sdkKey, status: p.status, cut: p.cut }))
   const effectiveLedger = isContract ? { ...ledger, refunds: ledgerNew } : ledger
+  // Each handler names its order states its own way. The expected final status is the one this target
+  // itself reported at SP1 (in-order run, after the capture), not MugShop's word for it.
+  const inOrderStatus = recording.startPoints?.SP1?.fingerprint?.status
+  const expect = { ...(scenario.expect || {}), ...(scenario.expect?.status && inOrderStatus ? { status: inOrderStatus } : {}) }
   const verdicts = evaluate(scenario.rules, {
     scenario,
-    expect: scenario.expect || {},
+    expect,
     before: stateStart,
     after,
     ledger: effectiveLedger,

@@ -160,16 +160,17 @@ export const SCENARIOS = [
     id: 'C-DUP',
     kind: 'contract',
     title: 'DUPLICATE CLAIMS: refundCapturedPayment',
-    summary: `The same ${CONTRACT_REFUND_AMOUNT} refund is requested from two code paths at once. The claim must let exactly one reach PayPal.`,
+    summary: `The same ${CONTRACT_REFUND_AMOUNT} refund is requested from the admin page and, right after it went through, from the support desk. The claim must let exactly one reach PayPal. (Two requests that overlap at PayPal are already stopped by PayPal itself: the sandbox answered 409 PREVIOUS_REQUEST_IN_PROGRESS to the second.)`,
     startPoint: 'SPC',
     rules: ['I7'],
     movesMoney: true,
     expect: {},
     requires: { refunds: true },
-    steps: [`admin refund ${CONTRACT_REFUND_AMOUNT} + support refund ${CONTRACT_REFUND_AMOUNT} with the same reference, in parallel`],
+    steps: [`admin refund ${CONTRACT_REFUND_AMOUNT}`, `support refund ${CONTRACT_REFUND_AMOUNT} with the same reference, right after`],
     async run(c) {
       const body = { orderId: c.contract.orderId, amount: CONTRACT_REFUND_AMOUNT, refundRef: 'RMA-1001' }
-      await Promise.all([c.refund('admin', body), c.refund('support', body)])
+      await c.refund('admin', body)
+      await c.refund('support', body)
     },
   },
   {

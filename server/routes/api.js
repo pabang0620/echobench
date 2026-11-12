@@ -114,8 +114,10 @@ export function apiRouter(lab) {
     const { recordingId } = parse(z.object({ recordingId: idSchema.optional() }), req.query)
     const targets = [...lab.targets.values()].filter((t) => t.meta?.variant !== 'candidate')
     const columns = targets.map((t) => {
-      const latest = latestByScenario(lab.store.listRuns({ recordingId, targetId: t.id }))
-      return { id: t.id, label: targetView(t).label, group: t.meta?.group || null, results: Object.fromEntries(Object.entries(latest).map(([k, r]) => [k, { status: r.status, headline: r.headline, runId: r.id }])) }
+      // An agent-built handler keeps its own database layout, so it is run on its own recording of the same purchase.
+      const ownRecording = t.meta?.variant === 'agent-built' && lab.store.getRecording(`${t.id}-demo`) ? `${t.id}-demo` : null
+      const latest = latestByScenario(lab.store.listRuns({ recordingId: ownRecording || recordingId, targetId: t.id }))
+      return { id: t.id, label: targetView(t).label, group: t.meta?.group || null, recordingId: ownRecording || recordingId, results: Object.fromEntries(Object.entries(latest).map(([k, r]) => [k, { status: r.status, headline: r.headline, runId: r.id }])) }
     })
     ok(res, { scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title })), columns })
   })

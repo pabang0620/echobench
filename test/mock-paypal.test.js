@@ -59,10 +59,22 @@ test('the same PayPal-Request-Id returns the stored refund and creates no second
   const a = await call('POST', `/v2/payments/captures/${fixture.captureId}/refund`, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'same' })
   const b = await call('POST', `/v2/payments/captures/${fixture.captureId}/refund`, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'same' })
   assert.equal(a.json.id, b.json.id)
+  assert.equal(a.status, 201)
+  assert.equal(b.status, 200, 'the sandbox answers 200 for a repeated PayPal-Request-Id (VERIFY V5)')
   const order = await call('GET', `/v2/checkout/orders/${fixture.orderId}`)
   assert.equal(order.json.purchase_units[0].payments.refunds.length, 1)
   const other = await call('POST', `/v2/payments/captures/${fixture.captureId}/refund`, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'different' })
   assert.notEqual(other.json.id, a.json.id)
+})
+
+test('two refunds that overlap on one capture: the second gets 409 PREVIOUS_REQUEST_IN_PROGRESS, as the sandbox answered', async () => {
+  const fixture = (await call('POST', '/__mock/fixture-capture', { amount: '12.00' })).json
+  const url = `/v2/payments/captures/${fixture.captureId}/refund`
+  const [a, b] = await Promise.all([call('POST', url, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'p1' }), call('POST', url, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'p2' })])
+  assert.deepEqual([a.status, b.status].sort(), [201, 409])
+  assert.equal([a, b].find((r) => r.status === 409).json.details[0].issue, 'PREVIOUS_REQUEST_IN_PROGRESS')
+  const later = await call('POST', url, { amount: { value: '4.00' } }, { 'PayPal-Request-Id': 'p3' })
+  assert.equal(later.status, 201, 'one after the other is refunded again: only the shop can stop that')
 })
 
 test('webhook deliveries carry a signature that verifies, and a resend is signed again', async () => {

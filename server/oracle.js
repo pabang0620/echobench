@@ -78,7 +78,7 @@ function i7({ scenario, expect, after, ledger, ledgerNew, ledgerBefore, sent, pr
   const evidence = { ledgerNew, shop: after.refunds, responses: sent.map((s) => ({ label: s.label, status: s.status })), proxy: proxyLog }
   if (scenario.id === 'C-DUP') {
     const ok = ledgerNew.length === 1 && after.refunds.length === 1
-    return verdict('I7', ok ? 'pass' : 'fail', ok ? 'Two simultaneous refund requests became one PayPal refund' : `PayPal refunds: ${ledgerNew.length} for one request, the shop books ${after.refunds.length}`, evidence)
+    return verdict('I7', ok ? 'pass' : 'fail', ok ? 'The same refund from two code paths became one PayPal refund' : `PayPal refunds: ${ledgerNew.length} for one request, the shop books ${after.refunds.length}`, evidence)
   }
   if (scenario.id === 'C-DUP-CAPTURE') {
     const bad = sent.filter((s) => s.status >= 500)

@@ -15,7 +15,7 @@ import { targetView } from '../targets/view.js'
 
 const COMPARE_TARGETS = ['mugshop', 'mugshop-contrast']
 const COMPARE_SCENARIOS = [
-  { id: 'C-DUP', title: 'Duplicate claim: two refund requests at once' },
+  { id: 'C-DUP', title: 'Duplicate claim: the same refund from two code paths' },
   { id: 'C-UNK', title: 'Unknown outcome: refund reply cut' },
   { id: 'C-UNK-CAPTURE', title: 'Unknown outcome: capture reply cut (stand-in only)' },
 ]
@@ -114,7 +114,7 @@ export function contractRouter(lab) {
       orderId: recording.contract.orderId,
       operator: lab.cfg.operator,
       environment: lab.cfg.mode === 'mock' ? 'Local PayPal stand-in (no real money, no sandbox)' : 'PayPal sandbox (fake money)',
-      text: `${lab.cfg.mode === 'mock' ? 'Mock refund (local PayPal stand-in)' : 'Sandbox refund'} of ${CONTRACT_REFUND_AMOUNT} USD ${scenarioId === 'C-DUP' ? 'is attempted from two code paths at once.' : 'is sent; the reply is cut on the way back.'} Capture ${capture.id}.`,
+      text: `${lab.cfg.mode === 'mock' ? 'Mock refund (local PayPal stand-in)' : 'Sandbox refund'} of ${CONTRACT_REFUND_AMOUNT} USD ${scenarioId === 'C-DUP' ? 'is requested from the admin page and then again from the support desk.' : 'is sent; the reply is cut on the way back.'} Capture ${capture.id}.`,
       expiresAt: new Date(Date.now() + CARD_TTL_MS).toISOString(),
     }
     cards.set(card.token, card)
