@@ -1,3 +1,5 @@
+Demo video: https://youtu.be/8bpgPqXV3Ts | Hosted demo: https://echobench.35-216-2-121.sslip.io | Devpost: https://devpost.com/software/echobench
+
 <img src="client/public/logo-512.png" width="128" alt="logo" />
 
 # EchoBench
@@ -8,13 +10,13 @@
 
 **What it does:** records real PayPal deliveries, replays them duplicated, reordered, late, dropped or forged, judges your shop's books against PayPal's own records, and has an AI step explain each failure and write a fix that EchoBench re-runs before you can apply it.
 
-**Try it:** https://echobench.35-216-2-121.sslip.io (no login). The hosted copy runs in **PayPal sandbox mode** and opens on a recording of real sandbox deliveries (VERIFY.md V1); the AI step there replays recorded Claude Sonnet runs. Locally, with no keys, PayPal is a local stand-in.
+**Try it:** https://echobench.35-216-2-121.sslip.io (no login). The hosted copy runs in **PayPal sandbox mode** and opens on a recording of real sandbox deliveries (VERIFY.md V1); the AI step there runs live Claude Sonnet (`claude-sonnet-5-5`) with per-IP-hour and per-day caps, and falls back to a labelled recorded run or a rule-based stand-in when the API call fails or a cap is hit. Locally, with no keys, PayPal is a local stand-in.
 
 **Status** (details in VERIFY.md):
 - Real PayPal sandbox: webhook deliveries recorded on the deployed host and all webhook scenarios run on them (V1); SDK reads, refund retry, contract payments and both refund promises (V4, V5, V5b, V8, V11).
 - Local stand-in only: the built-in recording, the dispute scenario D1 (no real dispute yet, V9), EverShop (R1), the A/B handlers (R2).
-- AI step: recorded real runs for every failing scenario (Claude Sonnet through a local Claude Code account, 2026-11-12) replay without a key; anything else is mocked and says so, see "The AI step".
-- Not run: PayPal resends and old originals (V2, V3), forged cert_url postback (V6), simulator events (V7), a real dispute (V9), the hosted Anthropic API path.
+- AI step: live Claude Sonnet (`claude-sonnet-5-5`) on the hosted demo; recorded real runs for every failing scenario (Claude Sonnet through a local Claude Code account, 2026-11-12) replay without a key or when a cap is hit; anything else is mocked and says so, see "The AI step".
+- Not run: PayPal resends and old originals (V2, V3), forged cert_url postback (V6), simulator events (V7), a real dispute (V9).
 
 Built for the PayPal AI Hackathon 2026. Target prize: Best Use of APIMatic.
 
@@ -123,7 +125,7 @@ MugShop's signature check, return path, refund claims and retry are written corr
 - **Through the SDK**: Orders `createOrder`, `captureOrder`, `getOrder`; Payments `getCapturedPayment`, `refundCapturedPayment`.
 - **Kept on REST**: Webhooks v1 (register, list, resend, simulate-event: `server/webhooksRest.js`) and webhook signature verification (`targets/mugshop/src/signature.ts`). The SDK has no Webhooks resource.
 - **Contract sheet**: [`paypal-plan.md`](paypal-plan.md) (DUPLICATE CLAIMS, UNKNOWN OUTCOMES, CROSS-OPERATION INVARIANTS, OPTIONAL FIELDS, WHEN THE API SAYS NO, host, retry and logging decisions, blockers). The SDK adapter tests are `test/sdk-adapter.test.js` and `test/sdk-truth.test.js`, with a faked `fetch` (duplicate claim and lost reply for each durable write).
-- Sandbox results: VERIFY.md (V1, V4, V5, V5b, V8, V11 PASS; V2, V3, V6, V7, V9 not run; V10 was run through a local Claude Code account, not the hosted API).
+- Sandbox results: VERIFY.md (V1, V4, V5, V5b, V8, V11 PASS; V2, V3, V6, V7, V9 not run; V10 was run through a local Claude Code account; the hosted demo uses the API backend).
 
 ## The AI step
 
@@ -133,7 +135,7 @@ Three backends, same prompt, same tools, same output shape:
 
 - **mock** (default): a mocked agent follows the same tool sequence with canned explanation text, labeled as scripted, and the reference fix, so the type check and re-runs are real. Also used if a live call fails (the card says so).
 - **account** (`LLM_BACKEND=account`): `server/agent/accountAgent.js` runs the loop through the Claude Agent SDK with the developer's Claude Code login. The Anthropic API key and token are removed from the environment of that process and the key is never read. The badge says "Claude Sonnet (local account)". Local use only.
-- **api** (`ANTHROPIC_API_KEY`): the loop in `server/agent/claudeAgent.js` over the Anthropic API. The API path was not run for this entry; VERIFY.md V10 was run in account mode.
+- **api** (`ANTHROPIC_API_KEY`): the loop in `server/agent/claudeAgent.js` over the Anthropic API. The hosted demo runs this path live with `claude-sonnet-5-5`, with per-IP-hour and per-day caps; VERIFY.md V10 was run in account mode.
 
 **Recorded runs.** `npm run verify-model -- <scenario> --record` runs one real diagnosis (account mode) against the local stand-in and saves it as `builtin/recorded-runs/<scenario>.json`: the model's own text, its tool order with the time of each call, its edits and the model time. Every red scenario of the planted MugShop has one, all Claude Sonnet (`claude-sonnet-5-5`) through a local Claude Code account on 2026-11-12, none edited:
 
@@ -196,7 +198,7 @@ See `.env.example`. All optional.
 
 ## What is not done yet
 
-Listed in `VERIFY.md` with how to run each. Not run yet: V2, V3, V6, V7, V9, the hosted-API path of the AI step and R1 on the sandbox. V1 is done on the deployed host (sandbox webhook `7DN129377S414341L`). R1 ran on the local stand-in and R2 in two rounds (A/B tab). Until they are run, the built-in results come from the local stand-in and say so. Next steps after this submission: R1 on the sandbox, a resend mode (after V2 says how fast and how signed a resend is), and a CI check.
+Listed in `VERIFY.md` with how to run each. Not run yet: V2, V3, V6, V7, V9 and R1 on the sandbox. V1 is done on the deployed host (sandbox webhook `7DN129377S414341L`). R1 ran on the local stand-in and R2 in two rounds (A/B tab). Until they are run, the built-in results come from the local stand-in and say so. Next steps after this submission: R1 on the sandbox, a resend mode (after V2 says how fast and how signed a resend is), and a CI check.
 
 ## License
 

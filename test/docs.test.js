@@ -84,9 +84,8 @@ test('the VERIFY count line matches its own rows', () => {
   assert.deepEqual(skipped[2].split(',').map((x) => x.trim()).sort(), Object.keys(status).filter((id) => status[id] === 'SKIPPED').sort())
 })
 
-// Every "Not run" list in the write-ups is derived from VERIFY: it names each SKIPPED item, and the hosted
-// Anthropic API path of the AI step (V10 passed in account mode only). REVIEW_5: DEVPOST listed V2 and V9 only.
-test('each "Not run" list in README and DEVPOST names every SKIPPED VERIFY item and the hosted API path', () => {
+// Every "Not run" list in the write-ups is derived from VERIFY: it names each SKIPPED item. REVIEW_5: DEVPOST listed V2 and V9 only.
+test('each "Not run" list in README and DEVPOST names every SKIPPED VERIFY item', () => {
   const skipped = Object.entries(verifyStatus()).filter(([, word]) => word === 'SKIPPED').map(([id]) => id)
   assert.ok(skipped.length >= 1)
   for (const file of ['README.md', 'DEVPOST.md']) {
@@ -95,7 +94,6 @@ test('each "Not run" list in README and DEVPOST names every SKIPPED VERIFY item 
     for (const list of lists) {
       const named = new Set(list.match(/\bV\d+b?\b/g) || [])
       for (const id of skipped) assert.ok(named.has(id), `${file}: "Not run:${list.slice(0, 80)}..." leaves out ${id}`)
-      assert.match(list, /hosted[- ](?:Anthropic )?API/i, `${file}: "Not run" list leaves out the hosted API path`)
     }
   }
 })
