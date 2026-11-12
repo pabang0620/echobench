@@ -55,12 +55,17 @@ export function loadConfig(env = process.env) {
     llmBackend: forceMock ? 'mock' : env.LLM_BACKEND === 'account' ? 'account' : env.ANTHROPIC_API_KEY ? 'api' : 'mock',
     anthropicKey: forceMock || env.LLM_BACKEND === 'account' ? '' : env.ANTHROPIC_API_KEY || '',
     anthropicModel: env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
+    // Live model run caps: per client IP per hour, per host per day (one run = one Diagnose press).
+    liveLimitPerIpHour: Math.max(1, Number(env.LLM_LIVE_PER_IP_HOUR || 10)),
+    liveLimitPerDay: Math.max(1, Number(env.LLM_LIVE_PER_DAY || 150)),
     operator: env.ECHOBENCH_OPERATOR || 'you',
     settleWindowMs: Number(env.SETTLE_WINDOW_MS || 6000),
     accessToken: env.ECHOBENCH_ACCESS_TOKEN || '',
     evershopDir: env.EVERSHOP_DIR || '',
     // Hosted demo: start every process from the planted MugShop, whatever an earlier visitor applied.
     resetWorkspaceOnStart: env.RESET_WORKSPACE_ON_START === '1',
+    // How many visitors may hold their own patched MugShop copy at once (each is a folder and, while used, a process).
+    maxVisitorCopies: Math.max(1, Number(env.MAX_VISITOR_COPIES || 8)),
   }
 }
 

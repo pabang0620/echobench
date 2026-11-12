@@ -106,7 +106,7 @@ export default function App() {
             onOpenRun={openRun}
             onSummary={() => setOpenRunId('')}
             onGoContract={() => setTab('contract')}
-            onChanged={async () => { await lab.reloadTargets(); await changed() }}
+            onChanged={async (runId) => { await lab.reloadTargets(); await changed(); if (runId) setOpenRunId(runId) }}
             onRan={() => setRefreshKey((k) => k + 1)}
           />
         ) : (

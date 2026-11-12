@@ -31,7 +31,7 @@ function latestByScenario(runs) {
   return latest
 }
 
-export function contractRouter(lab) {
+export function contractRouter(lab, { runTargetId = (id) => id, runsFor = (recordingId, targetId) => lab.store.listRuns({ recordingId, targetId }), viewFor = (t) => targetView(t) } = {}) {
   const router = express.Router()
   const cards = new Map()
   const wrap = (fn) => (req, res, next) => fn(req, res).catch(next)
@@ -44,7 +44,7 @@ export function contractRouter(lab) {
     if (!existsSync(planFile)) return ok(res, { available: false, reason: 'This target has no paypal-plan.md, so only the webhook scenarios apply.' })
     const markdown = readFileSync(planFile, 'utf8')
     const parsed = parsePlan(markdown)
-    const results = latestByScenario(lab.store.listRuns({ recordingId, targetId }))
+    const results = latestByScenario(runsFor(recordingId, targetId, req.visitor))
     const missing = checkCodeNames(parsed, planFile === PLAN_FILE ? PLAN_CODE_ROOT : path.dirname(planFile))
     ok(res, {
       available: true,
@@ -68,10 +68,10 @@ export function contractRouter(lab) {
     const { recordingId } = parse(z.object({ recordingId: idSchema }), req.query)
     const ids = COMPARE_SCENARIOS.map((s) => s.id)
     const columns = COMPARE_TARGETS.filter((id) => lab.targets.has(id)).map((id) => {
-      const latest = latestByScenario(lab.store.listRuns({ recordingId, targetId: id }))
+      const latest = latestByScenario(runsFor(recordingId, id, req.visitor))
       return {
         id,
-        label: targetView(lab.target(id)).label,
+        label: viewFor(lab.target(id), req.visitor).label,
         results: Object.fromEntries(ids.filter((s) => latest[s]).map((s) => [s, { status: latest[s].status, headline: latest[s].headline, runId: latest[s].id, precomputed: Boolean(latest[s].precomputed) }])),
       }
     })
@@ -80,9 +80,9 @@ export function contractRouter(lab) {
 
   router.get('/inbound', (req, res) => {
     const { recordingId, targetId } = parse(query, req.query)
-    const view = targetId.startsWith('mugshop') ? targetView(lab.target(targetId)) : null
+    const view = targetId.startsWith('mugshop') ? targetView(lab.visitors.resolve(targetId, req.visitor)) : null
     const handler = !view ? null : view.patched ? 'patched' : view.variant === 'planted' ? 'planted' : 'fixed'
-    ok(res, inboundTable(latestByScenario(lab.store.listRuns({ recordingId, targetId })), mugshopCells(handler)))
+    ok(res, inboundTable(latestByScenario(runsFor(recordingId, targetId, req.visitor)), mugshopCells(handler)))
   })
 
   // Step 1 of a contract run that moves sandbox money: build the card a person must confirm.
@@ -92,7 +92,7 @@ export function contractRouter(lab) {
     const scenario = scenarioById(scenarioId)
     const recording = lab.store.getRecording(recordingId)
     if (!recording?.contract) throw new HttpError(409, 'This recording has no captured, unrefunded payment for contract runs')
-    lab.target(targetId)
+    const ownTargetId = runTargetId(targetId, req.visitor)
     const ledger = await lab.truth.order(recording.contract.orderId)
     const capture = ledger.captures[0]
     const refunded = ledger.refunds.reduce((sum, r) => sum + Math.round(Number(r.amount) * 100), 0)
@@ -106,7 +106,7 @@ export function contractRouter(lab) {
       scenarioId,
       title: scenario.title,
       recordingId,
-      targetId,
+      targetId: ownTargetId,
       amount: CONTRACT_REFUND_AMOUNT,
       currency: 'USD',
       attempts,
@@ -130,7 +130,7 @@ export function contractRouter(lab) {
     if (Date.parse(card.expiresAt) < Date.now()) throw new HttpError(410, 'This confirmation card expired')
     const scenario = SCENARIOS.find((s) => s.id === card.scenarioId)
     const recording = lab.store.getRecording(card.recordingId)
-    const target = lab.target(card.targetId)
+    const target = lab.visitors.resolve(card.targetId, req.visitor)
     const run = await lab.exclusive(() => runScenario({ lab, scenario, recording, target }))
     run.confirmedBy = card.operator
     run.card = { amount: card.amount, captureId: card.captureId, environment: card.environment }

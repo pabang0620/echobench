@@ -1,4 +1,5 @@
 import express from 'express'
+import { clientIp } from '../agent/liveLimit.js'
 import { z } from 'zod'
 import { llmBackendOf } from '../config.js'
 import { ACCOUNT_LABEL } from '../agent/accountAgent.js'
@@ -11,6 +12,7 @@ import { applyDiagnosis, diagnose, getDiagnosis, listDiagnoses, resetWorkspace }
 import { importPrecomputed } from '../precomputed.js'
 import { targetView } from '../targets/view.js'
 import { summarizeAb } from '../abSummary.js'
+import { isVisitorCopyId, ownerTag } from '../visitors.js'
 import { contractRouter } from './contract.js'
 import { recordingsRouter } from './recordings.js'
 
@@ -46,25 +48,37 @@ export function apiRouter(lab) {
     }),
   )
 
-  router.get('/targets', (_req, res) =>
-    ok(res, [...lab.targets.values()]
-      .filter((t) => t.meta?.variant !== 'candidate')
-      .map(targetView)),
-  )
+  // Targets as this visitor sees them: "mugshop" is their own patched copy once they applied a patch.
+  const shown = (visitor) => [...lab.targets.values()].filter((t) => t.meta?.variant !== 'candidate' && !t.meta?.visitor)
+  const viewFor = (t, visitor) => (t.id === 'mugshop' ? { ...targetView(lab.visitors.resolve('mugshop', visitor)), id: 'mugshop' } : targetView(t))
+  // Runs are stored under the id of the target that really ran (a visitor's copy has its own id).
+  const runTargetId = (id, visitor) => (id ? lab.visitors.resolve(id, visitor).id : id)
+  // Runs of what the visitor calls targetId, newest first. On a patched copy, the two scenarios that move money
+  // (re-run only through a confirmation card) fall back to the shared copy's result, marked as from before the patch.
+  const runsFor = (recordingId, targetId, visitor) => {
+    const id = runTargetId(targetId, visitor)
+    const own = lab.store.listRuns({ recordingId, targetId: id })
+    if (!isVisitorCopyId(id)) return own
+    const money = new Set(SCENARIOS.filter((s) => s.movesMoney).map((s) => s.id))
+    const before = lab.store.listRuns({ recordingId, targetId: 'mugshop' }).filter((r) => money.has(r.scenarioId))
+    return [...own, ...before.map((r) => ({ ...r, beforePatch: true, headline: `${r.headline} (result from before your patch; run it again from the Contract tab)` }))]
+  }
+
+  router.get('/targets', (req, res) => ok(res, shown(req.visitor).map((t) => viewFor(t, req.visitor))))
 
   router.get('/scenarios', (_req, res) => ok(res, SCENARIOS.map(publicScenario)))
 
   router.use(recordingsRouter(lab))
-  router.use(contractRouter(lab))
+  router.use(contractRouter(lab, { runTargetId, runsFor, viewFor }))
 
   const runSchema = z.object({ scenarioId: idSchema, recordingId: idSchema, targetId: idSchema })
 
-  async function execute({ scenarioId, recordingId, targetId }) {
+  async function execute({ scenarioId, recordingId, targetId }, visitor) {
     const scenario = scenarioById(scenarioId)
     if (!scenario) throw new HttpError(404, 'Unknown scenario')
     const recording = lab.store.getRecording(recordingId)
     if (!recording) throw new HttpError(404, 'Unknown recording')
-    const target = lab.target(targetId)
+    const target = lab.visitors.resolve(targetId, visitor)
     const run = await lab.exclusive(() => runScenario({ lab, scenario, recording, target }))
     lab.store.saveRun(run)
     return run
@@ -75,19 +89,20 @@ export function apiRouter(lab) {
     const input = parse(runSchema, req.body)
     const scenario = scenarioById(input.scenarioId)
     if (scenario?.movesMoney) throw new HttpError(403, 'This scenario moves sandbox money. Open a confirmation card first.')
-    ok(res, await execute(input))
+    ok(res, await execute(input, req.visitor))
   }))
 
   router.post('/runs/all', wrap(async (req, res) => {
     const { recordingId, targetId } = parse(z.object({ recordingId: idSchema, targetId: idSchema }), req.body)
     const runs = []
-    for (const scenarioId of SHAKE_ALL_IDS) runs.push(await execute({ scenarioId, recordingId, targetId }))
+    for (const scenarioId of SHAKE_ALL_IDS) runs.push(await execute({ scenarioId, recordingId, targetId }, req.visitor))
     ok(res, runs)
   }))
 
   router.get('/runs', (req, res) => {
     const { recordingId, targetId } = parse(z.object({ recordingId: idSchema.optional(), targetId: idSchema.optional() }), req.query)
-    ok(res, lab.store.listRuns({ recordingId, targetId }).slice(0, 100))
+    const own = lab.visitors.copyOf(req.visitor)?.id
+    ok(res, lab.store.listRuns({ recordingId, targetId: runTargetId(targetId, req.visitor) }).filter((r) => !isVisitorCopyId(r.targetId) || r.targetId === own).slice(0, 100))
   })
 
   router.get('/runs/:id', (req, res) => {
@@ -99,7 +114,7 @@ export function apiRouter(lab) {
   // First screen: latest result per scenario, the headline run for the timeline, and the three rows to show.
   router.get('/overview', (req, res) => {
     const { recordingId, targetId } = parse(z.object({ recordingId: idSchema, targetId: idSchema }), req.query)
-    const latest = latestByScenario(lab.store.listRuns({ recordingId, targetId }))
+    const latest = latestByScenario(runsFor(recordingId, targetId, req.visitor))
     const list = SCENARIOS.map((s) => ({ scenario: publicScenario(s), run: latest[s.id] || null }))
     const done = list.filter((x) => x.run && x.run.kind === 'webhook')
     // One row per kind of problem: shipping first, then refund books, then the rest.
@@ -113,15 +128,15 @@ export function apiRouter(lab) {
   // Targets x scenarios: latest status of every scenario on every target that has runs (A/B and R1 tables).
   router.get('/matrix', (req, res) => {
     const { recordingId } = parse(z.object({ recordingId: idSchema.optional() }), req.query)
-    const targets = [...lab.targets.values()].filter((t) => t.meta?.variant !== 'candidate')
+    const targets = shown(req.visitor)
     // An agent-built handler and EverShop keep their own database layout, so each is run on its own
     // recording of a purchase made inside it (<target>-demo).
     const ownRecordingOf = (id) => (lab.store.getRecording(`${id}-demo`) ? `${id}-demo` : null)
     const column = (id, label, group, ownRecording) => {
-      const latest = latestByScenario(lab.store.listRuns({ recordingId: ownRecording || recordingId, targetId: id }))
+      const latest = latestByScenario(id === 'evershop' && !lab.targets.has('evershop') ? lab.store.listRuns({ recordingId: ownRecording, targetId: id }) : runsFor(ownRecording || recordingId, id, req.visitor))
       return { id, label, group, recordingId: ownRecording || recordingId, results: Object.fromEntries(Object.entries(latest).map(([k, r]) => [k, { status: r.status, headline: r.headline, runId: r.id }])) }
     }
-    const columns = targets.map((t) => column(t.id, targetView(t).label, t.meta?.group || null, t.meta?.variant === 'agent-built' || t.id === 'evershop' ? ownRecordingOf(t.id) : null))
+    const columns = targets.map((t) => column(t.id, viewFor(t, req.visitor).label, t.meta?.group || null, t.meta?.variant === 'agent-built' || t.id === 'evershop' ? ownRecordingOf(t.id) : null))
     // EverShop (R1) results recorded by scripts/run-ab.js stay visible where EverShop is not installed.
     if (!lab.targets.has('evershop') && ownRecordingOf('evershop')) columns.push(column('evershop', 'EverShop 2.4.0, unmodified (recorded results)', 'evershop', 'evershop-demo'))
     ok(res, { scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title })), columns, abSummary: summarizeAb(columns, SCENARIOS.map((s) => s.id)) })
@@ -130,25 +145,31 @@ export function apiRouter(lab) {
   const diagnoseSchema = z.object({ runId: idSchema })
   router.post('/agent/diagnose', wrap(async (req, res) => {
     const { runId } = parse(diagnoseSchema, req.body)
-    ok(res, await diagnose(lab, { runId }))
+    ok(res, await diagnose(lab, { runId, visitor: req.visitor, ip: clientIp(req) }))
   }))
   router.get('/agent/for-run/:runId', (req, res) => {
     const runId = parse(idSchema, req.params.runId)
-    ok(res, listDiagnoses(lab, runId))
+    ok(res, listDiagnoses(lab, runId, req.visitor))
   })
   router.get('/agent/:id', (req, res) => {
-    const record = getDiagnosis(lab, parse(idSchema, req.params.id))
+    const record = getDiagnosis(lab, parse(idSchema, req.params.id), req.visitor)
     if (!record) throw new HttpError(404, 'Unknown diagnosis')
     ok(res, record)
   })
   router.post('/agent/:id/apply', wrap(async (req, res) => {
     const { confirm } = parse(z.object({ confirm: z.boolean() }), req.body)
-    ok(res, await applyDiagnosis(lab, { diagnosisId: parse(idSchema, req.params.id), confirm, operator: lab.cfg.operator }))
+    ok(res, await applyDiagnosis(lab, { diagnosisId: parse(idSchema, req.params.id), confirm, operator: lab.cfg.operator, visitor: req.visitor }))
   }))
-  router.get('/applies', (_req, res) => ok(res, lab.store.listApplies()))
-  // Back to the planted bugs: a fresh working copy, and the first screen starts from the precomputed red results again.
+  router.get('/applies', (req, res) => ok(res, lab.store.listApplies().filter((a) => !a.owner || a.owner === ownerTag(req.visitor))))
+  // Back to the planted bugs. A visitor with their own patched copy loses it (and its runs) and sees the shared
+  // planted MugShop again. Without one: a fresh shared working copy, and the precomputed red results again.
   router.post('/targets/:id/reset-workspace', wrap(async (req, res) => {
     const targetId = parse(idSchema, req.params.id)
+    if (targetId === 'mugshop' && lab.visitors.has(req.visitor)) {
+      await lab.exclusive(() => lab.visitors.drop(req.visitor))
+      return ok(res, { reset: true })
+    }
+    lab.visitors.resolve(targetId, req.visitor)
     await lab.exclusive(async () => {
       await resetWorkspace(lab, targetId)
       lab.store.deleteRuns({ targetId })

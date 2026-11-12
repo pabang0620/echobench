@@ -8,6 +8,7 @@ import { createTruth } from './truth.js'
 import { createMugshopTarget, prepareWorkspace } from './targets/mugshop.js'
 import { loadExtraTargets } from './targets/extra.js'
 import { importPrecomputed } from './precomputed.js'
+import { createVisitorCopies } from './visitors.js'
 
 // Everything the lab needs, wired once: the PayPal ledger (stand-in or sandbox), the pass-through
 // proxy that can cut a reply, the read-only truth reader, the recorder, the store and the targets.
@@ -83,6 +84,7 @@ export async function createLab(overrides = {}) {
     },
   }
   lab.recorder = createRecorder({ store, getTarget: (id) => lab.target(id) })
+  lab.visitors = createVisitorCopies(lab, { max: cfg.maxVisitorCopies })
 
   if (cfg.resetWorkspaceOnStart) {
     prepareWorkspace(cfg.dataDir, 'mugshop', 'planted', { force: true })

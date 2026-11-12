@@ -23,7 +23,7 @@ Every duplicate shipment or missed refund in a merchant's books becomes a suppor
 - Measured on the PayPal sandbox on 2026-11-12: real webhook deliveries to the deployed host, recorded and shaken (V1, below), V4, V5, V8, V11, and the Contract tab's two promises run on real sandbox payments through the reply-cutting proxy (V5b, below).
 - Plugin off / on (R2) was generated on 2026-11-12 in two rounds and every handler was run (below). In round 2 the plugin-on model used the plugin's skills and its handler passed both lost-reply contract checks the plugin-off handler failed.
 - EverShop (R1), unmodified 2.4.0, ran on this machine on the local stand-in: a purchase and two refunds made inside EverShop, every scenario restored from a PostgreSQL template (below).
-- Not run yet: resend timing and signing (V2), a real dispute (V9). Needs PayPal: a sandbox "replay this recording" API would remove the need for a public receiver.
+- Not run yet: resend timing and signing (V2), old original bytes re-verified (V3), a postback with a forged cert_url (V6), simulator events (V7), a real dispute (V9), and the hosted Anthropic API path of the AI step (the recorded runs used a local Claude Code account). Needs PayPal: a sandbox "replay this recording" API would remove the need for a public receiver.
 
 ## What it does
 
@@ -74,6 +74,6 @@ See README.md, "Testing instructions" (about 3 minutes, no keys). `npm install`,
 1. Open the app (target MugShop (planted bugs)).
 2. Shake all: S1 and S5b red, S6 green.
 3. Click the S1 row, Explain and fix (replays the recorded Claude Sonnet run; every red row has its own).
-4. Apply to the MugShop working copy, then Shake all again: green. Reset to planted bugs restores the start.
+4. Apply to the MugShop working copy: EchoBench re-runs the scenarios on your own patched copy and the badge turns green (other visitors keep the planted bugs). Reset to planted bugs restores the start.
 5. Contract tab: sandbox evidence, contrast table, Run C-UNK.
 6. Recording tab. 7. Inbound events table and A/B tabs.

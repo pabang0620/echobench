@@ -224,3 +224,40 @@ test('D11: the first-screen rows carry the precomputed flag', async () => {
   assert.ok(overview.topRows.every((r) => typeof r.precomputed === 'boolean'))
   assert.match(overview.timelineCaption, /two partial refunds\)\.$/)
 })
+
+// ---- live caps: per IP per hour and per host per day, then the labelled fallback
+
+import { createLiveLimiter } from '../server/agent/liveLimit.js'
+
+test('live limiter: hourly window per IP on a fake clock, daily cap per host', () => {
+  let t = 0
+  const lim = createLiveLimiter({ perIpHour: 2, perDay: 3, now: () => t })
+  assert.equal(lim.take('a').ok, true)
+  assert.equal(lim.take('a').ok, true)
+  const blocked = lim.take('a')
+  assert.equal(blocked.ok, false)
+  assert.match(blocked.reason, /hourly/)
+  assert.equal(lim.take('b').ok, true)
+  assert.match(lim.take('c').reason, /daily/)
+  t = 61 * 60 * 1000
+  assert.match(lim.take('a').reason, /daily/, 'the hour window slid, only the daily cap is left')
+  t = 25 * 60 * 60 * 1000
+  assert.equal(lim.take('c').ok, true, 'the day window slid')
+  assert.equal(lim.take('a').ok, true)
+})
+
+test('diagnose: a reached cap never calls the model and falls back with a label', async () => {
+  const capped = await startLab({ anthropicKey: 'test-key-not-used', liveLimitPerIpHour: 1, liveLimitPerDay: 5 })
+  try {
+    const run = (await api(capped.url, 'POST', '/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
+    let calls = 0
+    const runModel = async () => { calls += 1; throw new Error('API down') }
+    await diagnose(capped.lab, { runId: run.id, ip: '1.2.3.4' }, { runModel })
+    const second = await diagnose(capped.lab, { runId: run.id, ip: '1.2.3.4' }, { runModel })
+    assert.equal(calls, 1)
+    assert.notEqual(second.mode, 'live')
+    assert.match(second.fallbackReason, /live limit reached/)
+  } finally {
+    await capped.stop()
+  }
+})

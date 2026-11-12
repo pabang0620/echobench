@@ -4,6 +4,7 @@ import path from 'node:path'
 import { APP_ROOT } from './config.js'
 import { errorHandler } from './http.js'
 import { accessGuard } from './access.js'
+import { visitorSession } from './visitors.js'
 import { hooksRouter } from './routes/hooks.js'
 import { apiRouter } from './routes/api.js'
 
@@ -12,7 +13,7 @@ export function createApp(lab) {
   app.disable('x-powered-by')
   app.use(accessGuard(lab.cfg.accessToken))
   app.use(hooksRouter(lab))
-  app.use('/api', express.json({ limit: '256kb' }), apiRouter(lab))
+  app.use('/api', visitorSession(), express.json({ limit: '256kb' }), apiRouter(lab))
   const dist = path.join(APP_ROOT, 'dist')
   if (existsSync(dist)) {
     app.use(express.static(dist))

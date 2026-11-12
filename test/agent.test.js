@@ -11,15 +11,18 @@ import { api, startLab } from './helpers.js'
 
 let ctx
 let diagnosis
+// One visitor for the whole file: a diagnosis and its Apply belong to the visitor who asked.
+const SID = 'e5'.repeat(16)
+const call = (method, route, body) => api(ctx.url, method, route, body, SID)
 before(async () => {
   ctx = await startLab()
-  const run = (await api(ctx.url, 'POST', '/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
-  diagnosis = (await api(ctx.url, 'POST', '/agent/diagnose', { runId: run.id })).json.data
+  const run = (await call('POST', '/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
+  diagnosis = (await call('POST', '/agent/diagnose', { runId: run.id })).json.data
 })
 after(() => ctx.stop())
 
 const sessionFor = async (scenarioId = 'S1') => {
-  const run = (await api(ctx.url, 'POST', '/runs', { scenarioId, recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
+  const run = (await call('POST', '/runs', { scenarioId, recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
   return createAgentSession(ctx.lab, { run, recording: ctx.recording(), target: ctx.lab.target('mugshop') })
 }
 
@@ -49,20 +52,20 @@ test('the repository source is untouched by a diagnosis', () => {
 })
 
 test('Apply needs confirm: true and a verified patch, and then the planted workspace turns green', async () => {
-  const refused = await api(ctx.url, 'POST', `/agent/${diagnosis.id}/apply`, { confirm: false })
+  const refused = await call('POST', `/agent/${diagnosis.id}/apply`, { confirm: false })
   assert.equal(refused.status, 400)
-  const applied = await api(ctx.url, 'POST', `/agent/${diagnosis.id}/apply`, { confirm: true })
+  const applied = await call('POST', `/agent/${diagnosis.id}/apply`, { confirm: true })
   assert.equal(applied.status, 200)
   assert.equal(applied.json.data.rerun.status, 'green')
   assert.deepEqual(applied.json.data.apply.files, ['src/webhook.ts'])
   assert.equal(applied.json.data.apply.appliedBy, 'you')
-  assert.equal((await api(ctx.url, 'POST', `/agent/${diagnosis.id}/apply`, { confirm: true })).status, 409)
-  assert.equal((await api(ctx.url, 'GET', '/applies')).json.data.length, 1)
+  assert.equal((await call('POST', `/agent/${diagnosis.id}/apply`, { confirm: true })).status, 409)
+  assert.equal((await call('GET', '/applies')).json.data.length, 1)
   // the original source file in the repository is still the planted version
   assert.match(readFileSync(path.join(APP_ROOT, 'targets', 'mugshop', 'src', 'webhook.ts'), 'utf8'), /PLANTED BUG A/)
   // and the lab can put the planted copy back
-  await api(ctx.url, 'POST', '/targets/mugshop/reset-workspace', {})
-  const again = (await api(ctx.url, 'POST', '/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
+  await call('POST', '/targets/mugshop/reset-workspace', {})
+  const again = (await call('POST', '/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
   assert.equal(again.status, 'red')
 })
 
@@ -124,8 +127,8 @@ test('read-only tools return PayPal records, SDK notes and recorded deliveries',
 })
 
 test('only failing webhook runs are diagnosed', async () => {
-  const green = (await api(ctx.url, 'POST', '/runs', { scenarioId: 'S6', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
-  assert.equal((await api(ctx.url, 'POST', '/agent/diagnose', { runId: green.id })).status, 400)
+  const green = (await call('POST', '/runs', { scenarioId: 'S6', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data
+  assert.equal((await call('POST', '/agent/diagnose', { runId: green.id })).status, 400)
 })
 
 test('explanations are written from the run evidence for each kind of failure', () => {

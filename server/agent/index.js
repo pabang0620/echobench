@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { runScenario } from '../scenarios/engine.js'
-import { WEBHOOK_SCENARIO_IDS, scenarioById } from '../scenarios/definitions.js'
+import { SCENARIOS, WEBHOOK_SCENARIO_IDS, scenarioById } from '../scenarios/definitions.js'
 import { HttpError } from '../http.js'
 import { newId } from '../store.js'
 import { applyCandidate, changedFiles, diffAgainst } from './patch.js'
@@ -13,6 +13,14 @@ import { loadRecorded, runRecorded, summarizeCall } from './recorded.js'
 import { runMockAgent } from './mockAgent.js'
 import { isVerified, verifyCandidate } from './verify.js'
 import { explainRun } from './explain.js'
+import { ownerTag } from '../visitors.js'
+import { createLiveLimiter } from './liveLimit.js'
+
+const limiters = new WeakMap()
+const limiterOf = (lab) => {
+  if (!limiters.has(lab)) limiters.set(lab, createLiveLimiter({ perIpHour: lab.cfg.liveLimitPerIpHour, perDay: lab.cfg.liveLimitPerDay, now: lab.cfg.now }))
+  return limiters.get(lab)
+}
 
 const agentDir = (lab) => path.join(lab.cfg.dataDir, 'agent')
 
@@ -21,26 +29,32 @@ export function save(lab, record) {
   writeFileSync(path.join(agentDir(lab), `${record.id}.json`), JSON.stringify(record, null, 2))
 }
 
-export function getDiagnosis(lab, id) {
+// A diagnosis belongs to the visitor who asked for it (owner = a hash of their session). Older or
+// precomputed ones have no owner and are shown to everyone; their patches cannot be applied.
+const visibleTo = (record, visitor) => !record?.owner || visitor === undefined || record.owner === ownerTag(visitor)
+
+export function getDiagnosis(lab, id, visitor) {
   const file = path.join(agentDir(lab), `${id}.json`)
-  return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  const record = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null
+  return visibleTo(record, visitor) ? record : null
 }
 
-export function listDiagnoses(lab, runId) {
+export function listDiagnoses(lab, runId, visitor) {
   const dir = agentDir(lab)
   if (!existsSync(dir)) return []
   return readdirSync(dir)
     .filter((f) => f.endsWith('.json'))
     .map((f) => JSON.parse(readFileSync(path.join(dir, f), 'utf8')))
-    .filter((d) => d.runId === runId)
+    .filter((d) => d.runId === runId && visibleTo(d, visitor))
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
 }
 
 // Diagnose one failing webhook run: explanation, a type-checked patch on a copy, and re-runs on that copy.
 // `deps.runModel` replaces the Anthropic call (tests); it gets { session, tools } and returns the model's text.
-export async function diagnose(lab, { runId }, deps = {}) {
+export async function diagnose(lab, { runId, visitor, ip = 'local' }, deps = {}) {
   const run = lab.store.getRun(runId)
   if (!run) throw new HttpError(404, 'Unknown run')
+  if (visitor !== undefined) lab.visitors.resolve(run.targetId, visitor)
   if (run.status !== 'red' && run.status !== 'amber') throw new HttpError(400, 'Only failing runs are diagnosed')
   if (run.kind !== 'webhook') throw new HttpError(403, 'Contract runs are explained by a person; the model has no access to them')
   const recording = lab.store.getRecording(run.recordingId)
@@ -54,6 +68,13 @@ export async function diagnose(lab, { runId }, deps = {}) {
   let result
   let modelMs = null
   if (mode === 'live') {
+    const taken = limiterOf(lab).take(ip)
+    if (!taken.ok) {
+      fallbackReason = taken.reason
+      mode = 'mock'
+    }
+  }
+  if (mode === 'live') {
     const modelStarted = Date.now()
     try {
       const runModel = deps.runModel || (backend === 'account' ? (args) => runAccountAgent({ ...args, model }) : (args) => runClaudeAgent({ ...args, apiKey: lab.cfg.anthropicKey, model }))
@@ -63,7 +84,7 @@ export async function diagnose(lab, { runId }, deps = {}) {
       const source = backend === 'account' ? ACCOUNT_LABEL : `Claude (${model}, Anthropic API)`
       result = { explanation: { cause: [], fix: [], evidence: explainRun(run).evidence, model: text || '', modelName: model, source }, patch: session.candidate ? { ok: session.candidate.tsc.ok } : null }
     } catch (err) {
-      fallbackReason = String(err.message).slice(0, 200)
+      fallbackReason = `Claude API unavailable: ${String(err.message).slice(0, 160)}`
       mode = 'mock'
       await tools.discard()
       session.steps.length = 0
@@ -88,6 +109,7 @@ export async function diagnose(lab, { runId }, deps = {}) {
     runId,
     scenarioId: run.scenarioId,
     targetId: target.id,
+    owner: ownerTag(visitor),
     mode,
     fallbackReason,
     createdAt: new Date().toISOString(),
@@ -114,35 +136,47 @@ export async function diagnose(lab, { runId }, deps = {}) {
   return record
 }
 
-// Apply = copy the candidate files over the editable workspace. Needs an explicit confirmation
-// and a verified candidate. The repository source is never touched.
-export async function applyDiagnosis(lab, { diagnosisId, confirm, operator }) {
+// Apply = copy the candidate files over the visitor's own working copy of MugShop (made from the planted
+// source on their first Apply, so nobody else sees the change). Needs an explicit confirmation and a
+// verified candidate. The repository source and the shared planted copy are never touched.
+// Then every scenario that moves no money is re-run on the patched copy, so the badge and the cards show the
+// patch's real results, not the results from before it. The two that move money need a confirmation card.
+export async function applyDiagnosis(lab, { diagnosisId, confirm, operator, visitor }) {
   if (confirm !== true) throw new HttpError(400, 'Apply needs confirm: true')
-  const record = getDiagnosis(lab, diagnosisId)
+  const record = getDiagnosis(lab, diagnosisId, visitor)
   if (!record?.candidate) throw new HttpError(404, 'No patch to apply')
   if (!record.candidate.verified) throw new HttpError(409, 'Only a patch that passed tsc and turned the scenario green can be applied')
   if (record.candidate.applied) throw new HttpError(409, 'Already applied')
-  const target = lab.target(record.targetId)
-  const base = target.meta?.workspace
-  if (!target.meta?.editable || !base) throw new HttpError(400, 'This target cannot be edited by EchoBench')
+  const source = lab.visitors.resolve(record.targetId, visitor)
+  if (!source.meta?.editable || !source.meta?.workspace) throw new HttpError(400, 'This target cannot be edited by EchoBench')
   if (!existsSync(record.candidate.dir)) throw new HttpError(409, 'The patched copy no longer exists; diagnose again')
 
-  const files = changedFiles(base, record.candidate.dir)
-  const diff = diffAgainst(base, record.candidate.dir)
-  applyCandidate(base, record.candidate.dir)
-  const entry = { id: newId('apply'), diagnosisId, targetId: target.id, files, appliedBy: operator, appliedAt: new Date().toISOString(), diff }
+  const { target, entry } = await lab.exclusive(async () => {
+    const own = source.meta.visitor ? source : await lab.visitors.ensure(visitor)
+    const base = own.meta.workspace
+    const files = changedFiles(base, record.candidate.dir)
+    const diff = diffAgainst(base, record.candidate.dir)
+    applyCandidate(base, record.candidate.dir)
+    await own.stop()
+    return { target: own, entry: { id: newId('apply'), diagnosisId, targetId: own.id, owner: ownerTag(visitor), files, appliedBy: operator, appliedAt: new Date().toISOString(), diff } }
+  })
   lab.store.addApply(entry)
   record.candidate.applied = true
   record.appliedAt = entry.appliedAt
   save(lab, record)
 
-  // Re-run the failing scenario on the real workspace to show the change took.
-  const run = lab.store.getRun(record.runId)
-  const scenario = scenarioById(run.scenarioId)
-  const recording = lab.store.getRecording(run.recordingId)
-  const confirmRun = await lab.exclusive(() => runScenario({ lab, scenario, recording, target }))
-  lab.store.saveRun(confirmRun)
-  return { apply: entry, rerun: { run_id: confirmRun.id, status: confirmRun.status, headline: confirmRun.headline } }
+  // The diagnosed scenario first (the card opens on it), then the rest.
+  const failed = lab.store.getRun(record.runId)
+  const recording = lab.store.getRecording(failed.recordingId)
+  const order = [failed.scenarioId, ...SCENARIOS.filter((s) => !s.movesMoney && s.id !== failed.scenarioId).map((s) => s.id)]
+  const reruns = []
+  for (const scenarioId of order) {
+    const run = await lab.exclusive(() => runScenario({ lab, scenario: scenarioById(scenarioId), recording, target }))
+    lab.store.saveRun(run)
+    reruns.push({ scenarioId, run_id: run.id, status: run.status, headline: run.headline })
+  }
+  const first = reruns[0]
+  return { apply: entry, rerun: { run_id: first.run_id, status: first.status, headline: first.headline }, reruns }
 }
 
 export async function resetWorkspace(lab, targetId) {

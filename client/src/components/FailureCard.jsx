@@ -97,10 +97,11 @@ export default function FailureCard({ runId, scenarios = [], onChanged, editable
     await api('POST', '/agent/diagnose', { runId })
     await load()
   })
-  const apply = (id) => wrap('Applying and re-running the scenario...', async () => {
-    await api('POST', `/agent/${id}/apply`, { confirm: true })
-    await load()
-    onChanged()
+  // After Apply the server re-runs every scenario on the patched copy; the card then opens the new run.
+  const apply = (id) => wrap('Applying, then re-running every scenario on your patched copy...', async () => {
+    const result = await api('POST', `/agent/${id}/apply`, { confirm: true })
+    if (!result?.rerun?.run_id) await load()
+    await onChanged(result?.rerun?.run_id)
   })
 
   if (!run) return <div className="panel"><div className="panel__body">{error ? <p className="error">{error}</p> : <Spinner label="Loading" />}</div></div>

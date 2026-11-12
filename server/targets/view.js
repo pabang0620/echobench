@@ -14,7 +14,7 @@ export function isPatched(target) {
 
 const NOTES = {
   planted: "MugShop's webhook handler has three planted bugs, documented in targets/mugshop/README.md. Everything else in MugShop is written to be correct.",
-  patched: 'You applied a patch, so this working copy is no longer the planted version and the bugs are fixed. Press "Reset to planted bugs" to bring the three bugs back.',
+  patched: 'You applied a patch to your own working copy (other visitors still see the planted bugs). EchoBench re-ran every scenario on it; the counts above are those results. Press "Reset to planted bugs" to drop your copy.',
   contrast: "Not a planted bug. This is MugShop's reference fix with the plan's refund claim and retry switched off (REFUND_CLAIM=off), to show what the Contract tab catches when the plan's promise is missing.",
 }
 

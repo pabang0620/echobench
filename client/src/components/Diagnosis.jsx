@@ -13,7 +13,7 @@ function Diff({ text }) {
 
 function modelBadge(d) {
   const source = d.explanation.source || d.explanation.modelName || 'the model'
-  if (d.mode === 'mock') return { tone: 'amber', text: 'Mocked model output' }
+  if (d.mode === 'mock') return { tone: 'amber', text: 'Rule-based stand-in (no model wrote this)' }
   if (d.mode === 'recorded') return { tone: 'good', text: `Recorded run: ${d.recorded.source}, ${d.recorded.recordedAt}` }
   return { tone: 'good', text: `Written by ${source}` }
 }
@@ -31,7 +31,7 @@ export default function Diagnosis({ diagnosis, applying, onApply, canEdit }) {
         <span className={`pill pill--${badge.tone}`}>{badge.text}</span>
         {diagnosis.mode === 'recorded' && <span className="pill pill--mute">replayed without a key; tsc and the re-runs below are run again now</span>}
         {diagnosis.precomputed && <span className="pill pill--mute">precomputed</span>}
-        {diagnosis.fallbackReason && <span className="pill pill--amber">model unavailable, fell back to mocked output</span>}
+        {diagnosis.fallbackReason && <span className="pill pill--amber">{'Live Claude not used: '}{diagnosis.fallbackReason}</span>}
       </div>
       {!real ? (
         <>

@@ -27,10 +27,11 @@ export async function startLab(overrides = {}) {
   }
 }
 
-export async function api(base, method, route, body) {
+// `session` = a visitor id (32 hex). Without one every request is a new visitor.
+export async function api(base, method, route, body, session) {
   const res = await fetch(`${base}/api${route}`, {
     method,
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...(session ? { 'x-echobench-session': session } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
   return { status: res.status, json: await res.json() }

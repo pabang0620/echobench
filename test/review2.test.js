@@ -22,12 +22,14 @@ before(async () => {
 after(() => ctx.stop())
 
 const runOn = (id, targetId) => runScenario({ lab: ctx.lab, scenario: scenarioById(id), recording: ctx.recording(), target: ctx.lab.target(targetId) })
-const post = (route, body) => api(ctx.url, 'POST', route, body)
+const VISITOR = 'a'.repeat(32)
+const post = (route, body) => api(ctx.url, 'POST', route, body, VISITOR)
+const get = (route) => api(ctx.url, 'GET', route, undefined, VISITOR)
 
 // ---- item 1: the label follows the working copy, and Reset brings the red screen back
 
 test('after Apply the target says "your patched copy", and Reset to planted bugs brings the red start back', async () => {
-  const before = (await api(ctx.url, 'GET', '/targets')).json.data.find((t) => t.id === 'mugshop')
+  const before = (await get('/targets')).json.data.find((t) => t.id === 'mugshop')
   assert.equal(before.label, 'MugShop (planted bugs)')
   assert.equal(before.patched, false)
   assert.match(before.note, /three planted bugs/)
@@ -36,21 +38,21 @@ test('after Apply the target says "your patched copy", and Reset to planted bugs
   const diagnosis = (await post('/agent/diagnose', { runId: run.id })).json.data
   assert.equal((await post(`/agent/${diagnosis.id}/apply`, { confirm: true })).status, 200)
 
-  const patched = (await api(ctx.url, 'GET', '/targets')).json.data.find((t) => t.id === 'mugshop')
+  const patched = (await get('/targets')).json.data.find((t) => t.id === 'mugshop')
   assert.equal(patched.label, 'MugShop (your patched copy)')
   assert.equal(patched.patched, true)
   assert.match(patched.note, /Reset to planted bugs/)
-  const matrix = (await api(ctx.url, 'GET', '/matrix?recordingId=mugshop-demo')).json.data
+  const matrix = (await get('/matrix?recordingId=mugshop-demo')).json.data
   assert.equal(matrix.columns.find((c) => c.id === 'mugshop').label, 'MugShop (your patched copy)')
 
-  // another visitor now sees green on the first screen: that is what Reset is for
+  // the same visitor's next run is on the patched copy
   assert.equal((await post('/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data.status, 'green')
 
   assert.equal((await post('/targets/mugshop/reset-workspace')).status, 200)
-  const reset = (await api(ctx.url, 'GET', '/targets')).json.data.find((t) => t.id === 'mugshop')
+  const reset = (await get('/targets')).json.data.find((t) => t.id === 'mugshop')
   assert.equal(reset.label, 'MugShop (planted bugs)')
   assert.equal(reset.patched, false)
-  const overview = (await api(ctx.url, 'GET', '/overview?recordingId=mugshop-demo&targetId=mugshop')).json.data
+  const overview = (await get('/overview?recordingId=mugshop-demo&targetId=mugshop')).json.data
   assert.equal(overview.topRows.filter((r) => r.status === 'red').length, 2, 'two red rows and one green row, as at the first visit')
   assert.equal(overview.topRows[2].status, 'green')
   assert.equal((await post('/runs', { scenarioId: 'S1', recordingId: 'mugshop-demo', targetId: 'mugshop' })).json.data.status, 'red')
