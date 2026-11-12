@@ -94,19 +94,29 @@ export class ProcessSqliteTarget {
     await this.#waitHealthy()
   }
 
+  // Ready = the health route answers. Failure = the child exits. Neither is a fixed sleep: under load
+  // (tsx compiling, other test files running) a start can take longer than any fixed wait, so the
+  // child is given until it answers or dies. TARGET_START_TIMEOUT_MS only stops a child that hangs.
   async #waitHealthy() {
-    const deadline = Date.now() + 15000
-    while (Date.now() < deadline) {
-      if (!this.child) throw new ConfigError(`${this.id} could not start. ${this.log.trim().slice(-600) || 'It exited without output.'}`)
+    const child = this.child
+    const exited = new Promise((resolve) => child.once('exit', (code, signal) => resolve({ code, signal })))
+    const limitMs = Number(process.env.TARGET_START_TIMEOUT_MS || 180000)
+    const started = Date.now()
+    let delay = 40
+    while (Date.now() - started < limitMs) {
+      if (this.child !== child) throw new ConfigError(`${this.id} could not start. ${this.log.trim().slice(-600) || 'It exited without output.'}`)
       try {
-        const res = await fetch(`${this.baseUrl}${this.paths.health}`)
+        const res = await fetch(`${this.baseUrl}${this.paths.health}`, { signal: AbortSignal.timeout(5000) })
         if (res.ok) return
       } catch {
         // not listening yet
       }
-      await new Promise((resolve) => setTimeout(resolve, 40))
+      const gone = await Promise.race([exited, new Promise((resolve) => setTimeout(() => resolve(null), delay))])
+      if (gone) throw new ConfigError(`${this.id} could not start (exit ${gone.code ?? gone.signal}). ${this.log.trim().slice(-600) || 'It exited without output.'}`)
+      delay = Math.min(delay * 2, 500)
     }
-    throw new ConfigError(`${this.id} did not become healthy in 15 s. ${this.log.trim().slice(-600)}`)
+    await this.stop()
+    throw new ConfigError(`${this.id} started but never answered ${this.paths.health} in ${Math.round(limitMs / 1000)} s. ${this.log.trim().slice(-600)}`)
   }
 
   async stop() {

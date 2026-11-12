@@ -18,7 +18,19 @@ export const RULES = {
   I8: 'An order with an opened dispute is not shipped',
 }
 
-function i1({ after, expect }) {
+// A shop whose merchant ships by hand (EverShop) never ships on a webhook, so "one shipment" becomes
+// "the one capture booked once, nothing shipped by the webhook".
+function i1ByHand({ after, ledger }) {
+  const booked = after.captures.length === 1 && ledger.captures.length === 1 && after.captures[0].id === ledger.captures[0].id
+  if (after.fulfilled_count > 0) return verdict('I1', 'fail', `A webhook shipped the order ${after.fulfilled_count} time(s); this shop ships by hand`, { shipments: after.shipments })
+  return booked
+    ? verdict('I1', 'pass', 'The one capture is booked once (this shop ships by hand, nothing shipped)', { captures: after.captures })
+    : verdict('I1', 'fail', `PayPal captured ${ledger.captures.length}, the shop books ${after.captures.length} capture(s)`, { captures: after.captures, paypal: ledger.captures })
+}
+
+function i1(facts) {
+  if (facts.shipsByHand) return i1ByHand(facts)
+  const { after, expect } = facts
   const wanted = expect.shipments ?? 1
   const early = after.shipments.filter((s) => !s.capture_recorded)
   if (after.fulfilled_count !== wanted) {
@@ -47,9 +59,10 @@ function i3({ before, after, sent }) {
   return verdict('I3', 'pass', `Rejected ${sent.length - skipped} forged event${sent.length - skipped === 1 ? '' : 's'} (state unchanged)${note}`, { statuses: sent.map((s) => ({ label: s.label, status: s.status })) })
 }
 
-function i4({ after, expect, ledger }) {
+function i4({ after, expect, ledger, shipsByHand }) {
   const problems = []
-  if (after.fulfilled_count !== (expect.shipments ?? 1)) problems.push(`shipped ${after.fulfilled_count} time(s)`)
+  if (after.fulfilled_count !== (shipsByHand ? 0 : expect.shipments ?? 1)) problems.push(`shipped ${after.fulfilled_count} time(s)`)
+  if (shipsByHand && after.captures.length !== ledger.captures.length) problems.push(`PayPal captured ${ledger.captures.length}, the shop books ${after.captures.length}`)
   if (expect.status && after.status !== expect.status) problems.push(`order status ${after.status}, expected ${expect.status}`)
   if (after.shipments.some((s) => !s.capture_recorded)) problems.push('a shipment happened before the capture')
   if (expect.refundsFromLedger && total(after.refunds) !== total(ledger.refunds)) problems.push('refunds differ from PayPal')

@@ -67,6 +67,16 @@ test('the same PayPal-Request-Id returns the stored refund and creates no second
   assert.notEqual(other.json.id, a.json.id)
 })
 
+test('a refund keeps its custom_id in the reply and in GET order, as the sandbox does (refund 21J38299VE4849725)', async () => {
+  const fixture = (await call('POST', '/__mock/fixture-capture', { amount: '12.00' })).json
+  const made = await call('POST', `/v2/payments/captures/${fixture.captureId}/refund`, { amount: { value: '4.00' }, custom_id: 'RMA-9' }, { 'PayPal-Request-Id': 'cid' })
+  assert.equal(made.json.custom_id, 'RMA-9')
+  const order = await call('GET', `/v2/checkout/orders/${fixture.orderId}`)
+  assert.equal(order.json.purchase_units[0].payments.refunds[0].custom_id, 'RMA-9')
+  const plain = await call('POST', `/v2/payments/captures/${fixture.captureId}/refund`, { amount: { value: '1.00' } })
+  assert.equal('custom_id' in plain.json, false)
+})
+
 test('two refunds that overlap on one capture: the second gets 409 PREVIOUS_REQUEST_IN_PROGRESS, as the sandbox answered', async () => {
   const fixture = (await call('POST', '/__mock/fixture-capture', { amount: '12.00' })).json
   const url = `/v2/payments/captures/${fixture.captureId}/refund`

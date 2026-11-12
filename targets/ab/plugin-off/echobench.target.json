@@ -1,5 +1,5 @@
 {
-  "label": "Agent-built handler (plugin off)",
+  "label": "Round 1 request, plugin off",
   "group": "plugin-off",
   "command": "node",
   "args": ["--no-warnings", "dist/server.js"],

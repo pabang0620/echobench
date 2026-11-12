@@ -1,0 +1,11 @@
+{
+  "label": "SDK-named request, plugin off",
+  "group": "sdk-plugin-off",
+  "command": "node",
+  "args": ["--no-warnings", "dist/server.js"],
+  "paths": {
+    "webhook": "/webhooks/paypal",
+    "returnPath": "/checkout/return",
+    "refund": { "admin": "/admin/refund", "support": "/support/refund" }
+  }
+}

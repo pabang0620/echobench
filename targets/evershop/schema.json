@@ -1,5 +1,5 @@
 {
-  "_note": "TO CONFIRM against the installed EverShop (psql \\d, or `npm run evershop:check-schema`). Only integration_order_id and transaction_id are named in the plan; the other columns are best guesses.",
+  "_note": "Checked on 2026-11-12 against EverShop 2.4.0 (commit 25cf1e8) with scripts/evershop-check-schema.js: every column exists. Captures and refunds are told apart by payment_action ('capture' / 'refund', paypal/services/finalizePaypalOrder.ts and oms/services/recordRefund.ts); transaction_type is 'online' for both.",
   "order": {
     "table": "order",
     "key": "integration_order_id",
@@ -11,10 +11,14 @@
     "table": "payment_transaction",
     "orderRef": "payment_transaction_order_id",
     "transactionId": "transaction_id",
-    "type": "transaction_type",
+    "type": "payment_action",
     "amount": "amount",
-    "captureTypes": ["online"],
-    "refundTypes": ["offline"]
+    "captureTypes": [
+      "capture"
+    ],
+    "refundTypes": [
+      "refund"
+    ]
   },
   "shipment": {
     "table": "shipment",

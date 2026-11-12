@@ -1,7 +1,8 @@
 // Column names of the APIMatic Context Plugin's paypal-plan.md tables, as written in the
 // plugin's typescript-integrate-paypal skill (section 1b). The parser finds tables by these
-// header names, not by position. Status: TO CONFIRM against a plan the plugin really generated
-// (plan R2 step; VERIFY.md R2). If the generated file differs, edit this file only.
+// header names, not by position. Compared with a plan the plugin really generated (targets/ab/sdk-plugin-on,
+// 2026-11-12): the section titles match, the column names were shortened, so parser.js also finds a table
+// by the section heading above it and reads its columns in this order.
 export const HEADER_SETS = {
   'duplicate-claims': {
     title: 'DUPLICATE CLAIMS',

@@ -9,6 +9,7 @@ dist/
 data/
 VERIFY_RESULTS.json
 .evershop/
+.evershop-pg/
 # EverShop run records can contain a defect that has not been reported to its maintainers yet.
 # Keep them out of git until that has happened.
 targets/evershop/runs/

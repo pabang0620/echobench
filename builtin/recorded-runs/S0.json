@@ -1,0 +1,183 @@
+{
+  "scenarioId": "S0",
+  "backend": "account",
+  "model": "claude-sonnet-5-5",
+  "source": "Claude Sonnet (local account)",
+  "recordedAt": "2026-11-12",
+  "text": "The patch fixes S0 and every other scenario that failed. I re-ran all ten. Nine are green and S7 is amber, which counts as a warning, so the patch should be accepted. I haven't pressed Apply, and the patch is still only on the copy.\n\n**What went wrong in S0**\n- PayPal recorded one order, one capture of 12.00 and two refunds.\n- The shop shipped the mug twice, and the first shipment happened before the capture.\n\n**Which lines caused it** (all in `src/webhook.ts`)\n- **Shipping on approval:** the `CHECKOUT.ORDER.APPROVED` branch called `shipOrder`. The buyer had approved but PayPal had not captured the money yet.\n- **Shipping on every completed event:** the `PAYMENT.CAPTURE.COMPLETED` branch shipped without checking for an earlier shipment. It also ignored disputes. That is the second shipment, and it breaks the plan's rule \"a mug ships once per captured payment\".\n- **Event log:** the handler wrote every event id with `INSERT OR REPLACE`, so a repeated event was never recognised as a repeat.\n\n**The same file broke the other scenarios**\n- **S1 to S4:** same double shipment as S0.\n- **D1:** shipped although a dispute was open.\n- **S7:** an old event was processed again and changed state.\n- **S5 and S5b:** the refund branch deleted the order's earlier refund before saving the new one. `startReconcile` was empty, so a missed refund event was never caught up.\n\n**What the patch changes**\n- Event ids are now saved with `INSERT OR IGNORE`. An id already seen is answered with 200 and ignored.\n- Approval no longer ships.\n- A completed event ships only if the order has no shipment yet, is not on hold, and its capture is not marked disputed.\n- A dispute marks the capture `DISPUTED`, even if the capture is not in the books yet.\n- Refunds are saved with `INSERT OR IGNORE` and the `DELETE` is gone, so every refund is kept.\n- `startReconcile` now runs every 1.5 seconds. It reads each order's refunds from PayPal with `getOrder` and adds any the shop is missing.\n\n**Results on the patched copy** (tsc passed)\n\n| Scenario | Result |\n|---|---|\n| S0, S1, S2, S3, S4 | green, shipped once, after the capture (S0 invariant I1 passes) |\n| S5 | green, books matched PayPal at 12.00 after the missed event |\n| S5b | green, PayPal and the shop both show 12.00 across 2 refunds |\n| S6 | green, 3 forged events rejected |\n| S7 | amber, the old event was accepted but ignored, nothing changed |\n| D1 | green, order on hold and not shipped |\n\n**Remaining limits**\n- If a dispute arrives before the capture event, the shop saves the capture with an empty order id. The reconcile loop skips that capture, so its refunds are not caught up. No scenario covers this case.\n- An event id is saved before the handler runs. If the handler crashes partway, a PayPal retry of that event would be ignored.\n- I did not run the contract scenarios. They move sandbox money and need a person to confirm.",
+  "durationMs": 50952,
+  "toolCalls": [
+    {
+      "tool": "get_failures",
+      "summary": "",
+      "atMs": 3371
+    },
+    {
+      "tool": "get_timeline",
+      "summary": "",
+      "atMs": 3403
+    },
+    {
+      "tool": "check_invariants",
+      "summary": "run_mwdibmzpf85f1f",
+      "atMs": 3690
+    },
+    {
+      "tool": "read_contract",
+      "summary": "",
+      "atMs": 3762
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/webhook.ts",
+      "atMs": 4086
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/db.ts",
+      "atMs": 6390
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/events.ts",
+      "atMs": 6638
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/paypalPort.ts",
+      "atMs": 6918
+    },
+    {
+      "tool": "get_delivery",
+      "summary": "completed",
+      "atMs": 7170
+    },
+    {
+      "tool": "get_delivery",
+      "summary": "approved",
+      "atMs": 7306
+    },
+    {
+      "tool": "get_timeline",
+      "summary": "",
+      "atMs": 11263
+    },
+    {
+      "tool": "get_delivery",
+      "summary": "dispute",
+      "atMs": 11529
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/paypalTypes.ts",
+      "atMs": 11795
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/server.ts",
+      "atMs": 12079
+    },
+    {
+      "tool": "paypal_truth",
+      "summary": "8576B178E86346981",
+      "atMs": 12279
+    },
+    {
+      "tool": "propose_patch",
+      "summary": "7 edit(s) in src/webhook.ts",
+      "atMs": 28253
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S0",
+      "atMs": 31345
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S1",
+      "atMs": 32255
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S2",
+      "atMs": 33253
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S3",
+      "atMs": 34220
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S4",
+      "atMs": 35176
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S5",
+      "atMs": 37363
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S5b",
+      "atMs": 38303
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S6",
+      "atMs": 39173
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S7",
+      "atMs": 39995
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "D1",
+      "atMs": 41146
+    },
+    {
+      "tool": "check_invariants",
+      "summary": "run_mwdicazif5a7cc",
+      "atMs": 42443
+    }
+  ],
+  "edits": [
+    {
+      "file": "src/webhook.ts",
+      "old_str": "import { one, run, shipOrder, type Db } from './db.ts'",
+      "new_str": "import { all, one, run, shipOrder, type Db } from './db.ts'"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "  run(db, 'INSERT OR REPLACE INTO processed_events (event_id, event_type, received_at) VALUES (?, ?, ?)', event.id, event.event_type, new Date().toISOString())",
+      "new_str": "  const fresh = run(db, 'INSERT OR IGNORE INTO processed_events (event_id, event_type, received_at) VALUES (?, ?, ?)', event.id, event.event_type, new Date().toISOString())\n  if (fresh === 0) return { status: 200, body: { ignored: 'duplicate event' } }"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      shipOrder(db, approvedOrderId(event), event.event_type) // PLANTED BUG B\n      return { status: 200, body: { handled: event.event_type } }",
+      "new_str": "      // Approved is not paid yet: ship only after PAYMENT.CAPTURE.COMPLETED.\n      void approvedOrderId(event)\n      return { status: 200, body: { handled: event.event_type } }"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      shipOrder(db, orderId, event.event_type) // PLANTED BUG A",
+      "new_str": "      const shipped = one(db, 'SELECT 1 AS found FROM shipments WHERE paypal_order_id = ?', orderId)\n      const held = one(db, 'SELECT 1 AS found FROM orders WHERE paypal_order_id = ? AND on_hold = 1', orderId)\n      const disputed = one(db, \"SELECT 1 AS found FROM captures WHERE paypal_capture_id = ? AND status = 'DISPUTED'\", captureId)\n      if (!shipped && !held && !disputed) shipOrder(db, orderId, event.event_type)"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      run(db, 'DELETE FROM refunds WHERE paypal_order_id = ?', orderId) // PLANTED BUG C\n      run(db, 'INSERT INTO refunds",
+      "new_str": "      run(db, 'INSERT OR IGNORE INTO refunds"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      const capture = one(db, 'SELECT paypal_order_id FROM captures WHERE paypal_capture_id = ?', disputedCaptureId(event))\n      if (capture) run(db, 'UPDATE orders SET on_hold = 1 WHERE paypal_order_id = ?', String(capture.paypal_order_id))",
+      "new_str": "      const disputedId = disputedCaptureId(event)\n      const capture = one(db, 'SELECT paypal_order_id FROM captures WHERE paypal_capture_id = ?', disputedId)\n      if (capture) run(db, 'UPDATE orders SET on_hold = 1 WHERE paypal_order_id = ?', String(capture.paypal_order_id))\n      run(db, \"INSERT INTO captures (paypal_capture_id, paypal_order_id, amount, status) VALUES (?, '', '0.00', 'DISPUTED') ON CONFLICT(paypal_capture_id) DO UPDATE SET status = 'DISPUTED'\", disputedId)"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "export function startReconcile(_db: Db, _port: PaypalPort): void {}",
+      "new_str": "export function startReconcile(db: Db, port: PaypalPort): void {\n  let busy = false\n  const timer = setInterval(async () => {\n    if (busy) return\n    busy = true\n    try {\n      const orders = all(db, \"SELECT DISTINCT paypal_order_id FROM captures WHERE paypal_order_id <> ''\")\n      for (const row of orders) {\n        const orderId = String(row.paypal_order_id)\n        const ledger = await port.getOrder(orderId)\n        for (const refund of ledger.refunds) {\n          run(db, 'INSERT OR IGNORE INTO refunds (paypal_refund_id, paypal_order_id, amount) VALUES (?, ?, ?)', refund.id, orderId, refund.amount)\n        }\n      }\n    } catch {\n      // try again on the next tick\n    } finally {\n      busy = false\n    }\n  }, 1500)\n  timer.unref()\n}"
+    }
+  ]
+}

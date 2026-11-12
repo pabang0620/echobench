@@ -1,13 +1,14 @@
 import { PROOF_COLUMN } from './headers.js'
 
-// Which EchoBench scenario proves which plan row. Matched on the Write cell.
+// Which EchoBench scenario proves which plan row. Matched on the Write cell: the SDK operation name,
+// or plain "refund" as the plugin-generated plan in targets/ab/sdk-plugin-on writes it.
 const ROW_SCENARIOS = {
   'duplicate-claims': [
-    { match: /refundCapturedPayment/i, scenario: 'C-DUP' },
+    { match: /refundCapturedPayment|^refunds?$/i, scenario: 'C-DUP' },
     { match: /captureOrder/i, scenario: 'C-DUP-CAPTURE' },
   ],
   'unknown-outcomes': [
-    { match: /refundCapturedPayment/i, scenario: 'C-UNK' },
+    { match: /refundCapturedPayment|^refunds?$/i, scenario: 'C-UNK' },
     { match: /captureOrder/i, scenario: 'C-UNK-CAPTURE' },
   ],
 }

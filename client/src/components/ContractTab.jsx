@@ -7,7 +7,7 @@ import SandboxEvidence from './SandboxEvidence.jsx'
 
 const KIND_TITLE = { 'duplicate-claims': 'DUPLICATE CLAIMS', 'unknown-outcomes': 'UNKNOWN OUTCOMES', 'cross-operation-invariants': 'CROSS-OPERATION INVARIANTS' }
 
-export default function ContractTab({ recordingId, targetId, refreshKey, onOpenRun, onChanged }) {
+export default function ContractTab({ recordingId, targetId, scenarios = [], refreshKey, onOpenRun, onChanged }) {
   const [data, setData] = useState(null)
   const [card, setCard] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -68,6 +68,16 @@ export default function ContractTab({ recordingId, targetId, refreshKey, onOpenR
 
   if (!data) return error ? <p className="error">{error}</p> : null
   if (!data.available) return <p className="muted">{data.reason}</p>
+  if (card) {
+    const scenario = scenarios.find((s) => s.scenario.id === card.scenarioId)?.scenario
+    const planRow = data.rows.find((r) => r.scenario === card.scenarioId)
+    return (
+      <>
+        <ConfirmCard card={card} scenario={scenario} planRow={planRow} onRun={runCard} onCancel={cancel} busy={busy} />
+        {error && <p className="error" role="alert">{error}</p>}
+      </>
+    )
+  }
   return (
     <div>
       <SandboxEvidence />
@@ -105,7 +115,6 @@ export default function ContractTab({ recordingId, targetId, refreshKey, onOpenR
       })}
       <Evidence title="Plan copy with the Proven by EchoBench column" data={data.annotated} />
       {error && <p className="error" role="alert">{error}</p>}
-      {card && <ConfirmCard card={card} onRun={runCard} onCancel={cancel} busy={busy} />}
     </div>
   )
 }

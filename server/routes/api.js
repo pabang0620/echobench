@@ -10,6 +10,7 @@ import { compositeTimeline } from '../scenarios/timeline.js'
 import { applyDiagnosis, diagnose, getDiagnosis, listDiagnoses, resetWorkspace } from '../agent/index.js'
 import { importPrecomputed } from '../precomputed.js'
 import { targetView } from '../targets/view.js'
+import { summarizeAb } from '../abSummary.js'
 import { contractRouter } from './contract.js'
 import { recordingsRouter } from './recordings.js'
 
@@ -113,13 +114,17 @@ export function apiRouter(lab) {
   router.get('/matrix', (req, res) => {
     const { recordingId } = parse(z.object({ recordingId: idSchema.optional() }), req.query)
     const targets = [...lab.targets.values()].filter((t) => t.meta?.variant !== 'candidate')
-    const columns = targets.map((t) => {
-      // An agent-built handler keeps its own database layout, so it is run on its own recording of the same purchase.
-      const ownRecording = t.meta?.variant === 'agent-built' && lab.store.getRecording(`${t.id}-demo`) ? `${t.id}-demo` : null
-      const latest = latestByScenario(lab.store.listRuns({ recordingId: ownRecording || recordingId, targetId: t.id }))
-      return { id: t.id, label: targetView(t).label, group: t.meta?.group || null, recordingId: ownRecording || recordingId, results: Object.fromEntries(Object.entries(latest).map(([k, r]) => [k, { status: r.status, headline: r.headline, runId: r.id }])) }
-    })
-    ok(res, { scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title })), columns })
+    // An agent-built handler and EverShop keep their own database layout, so each is run on its own
+    // recording of a purchase made inside it (<target>-demo).
+    const ownRecordingOf = (id) => (lab.store.getRecording(`${id}-demo`) ? `${id}-demo` : null)
+    const column = (id, label, group, ownRecording) => {
+      const latest = latestByScenario(lab.store.listRuns({ recordingId: ownRecording || recordingId, targetId: id }))
+      return { id, label, group, recordingId: ownRecording || recordingId, results: Object.fromEntries(Object.entries(latest).map(([k, r]) => [k, { status: r.status, headline: r.headline, runId: r.id }])) }
+    }
+    const columns = targets.map((t) => column(t.id, targetView(t).label, t.meta?.group || null, t.meta?.variant === 'agent-built' || t.id === 'evershop' ? ownRecordingOf(t.id) : null))
+    // EverShop (R1) results recorded by scripts/run-ab.js stay visible where EverShop is not installed.
+    if (!lab.targets.has('evershop') && ownRecordingOf('evershop')) columns.push(column('evershop', 'EverShop 2.4.0, unmodified (recorded results)', 'evershop', 'evershop-demo'))
+    ok(res, { scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title })), columns, abSummary: summarizeAb(columns, SCENARIOS.map((s) => s.id)) })
   })
 
   const diagnoseSchema = z.object({ runId: idSchema })

@@ -177,6 +177,7 @@ export async function runScenario({ lab, scenario, recording, target }) {
     sent,
     proxyLog,
     windowMs,
+    shipsByHand: Boolean(target.capabilities?.shipsByHand),
   })
   lab.proxy.disarm()
   await putLedgerBack()

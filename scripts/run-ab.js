@@ -4,10 +4,10 @@ import { createApp } from '../server/app.js'
 import { createLab } from '../server/lab.js'
 import { APP_ROOT } from '../server/config.js'
 import { buildBuiltinRecording } from '../server/seed.js'
-import { WEBHOOK_SCENARIO_IDS, scenarioById } from '../server/scenarios/definitions.js'
+import { SCENARIOS, scenarioById } from '../server/scenarios/definitions.js'
 import { runScenario } from '../server/scenarios/engine.js'
 
-// R2: run every webhook scenario on the agent-built handlers in targets/ab/* (plugin off / plugin on)
+// R2: run every scenario (webhook and contract) on the agent-built handlers in targets/ab/* (plugin off / plugin on)
 // and, if EVERSHOP_DIR is set, on EverShop. Always on the local PayPal stand-in.
 // A handler keeps its own database layout, so each one gets its own recording of the same purchase
 // (builtin/ab-<name>-demo, made by driving that handler, never by copying MugShop's files).
@@ -49,7 +49,7 @@ try {
     const target = lab.target(targetId)
     const recording = lab.store.getRecording(recordings[targetId])
     if (!recording) throw new Error(`No recording ${recordings[targetId]}`)
-    for (const id of WEBHOOK_SCENARIO_IDS) {
+    for (const { id } of SCENARIOS) {
       const run = await runScenario({ lab, scenario: scenarioById(id), recording, target })
       run.precomputed = true
       runs.push(run)
@@ -57,7 +57,7 @@ try {
     }
     await target.stop()
   }
-  writeFileSync(path.join(APP_ROOT, 'builtin', 'ab-runs.json'), JSON.stringify({ generatedAt: new Date().toISOString(), note: 'R2 plugin off / on: webhook scenarios on the two agent-built handlers, local PayPal stand-in. Generation logs in targets/ab/*/GENERATION_LOG.md.', recordings, runs }, null, 1))
+  writeFileSync(path.join(APP_ROOT, 'builtin', 'ab-runs.json'), JSON.stringify({ generatedAt: new Date().toISOString(), note: 'R2 plugin off / on: webhook and contract scenarios on the two agent-built handlers, local PayPal stand-in. Generation logs in targets/ab/*/GENERATION_LOG.md.', recordings, runs }, null, 1))
 } finally {
   server.close()
   await lab.stop()

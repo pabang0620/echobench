@@ -110,6 +110,10 @@ test('read-only tools return PayPal records, SDK notes and recorded deliveries',
   const { tools } = await sessionFor()
   const truth = await tools.paypal_truth({ order_id: ctx.recording().orderId })
   assert.equal(truth.refunds.length, 2)
+  // The account runs passed the scenario id; both that and no id read the recorded order.
+  assert.equal((await tools.paypal_truth({ order_id: 'S1' })).refunds.length, 2)
+  assert.equal((await tools.paypal_truth({})).refunds.length, 2)
+  assert.equal((await tools.get_timeline()).orderId, ctx.recording().orderId)
   assert.match((await tools.lookup_sdk({ name: 'refundCapturedPayment' })).note, /payPalRequestId/)
   assert.match((await tools.lookup_sdk({ name: 'refundCapturedPayment' })).note, /Idempotency-Key/)
   const delivery = await tools.get_delivery({ label: 'completed' })

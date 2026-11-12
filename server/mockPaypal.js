@@ -67,6 +67,7 @@ export function createMockPaypal({ webhookId = 'WH-MOCK-0001', resendResigns = t
       id: refund.id,
       status: 'COMPLETED',
       amount: { currency_code: 'USD', value: refund.amount },
+      ...(refund.customId ? { custom_id: refund.customId } : {}),
       create_time: refund.createdAt,
       update_time: refund.createdAt,
       links: [
@@ -228,7 +229,8 @@ export function createMockPaypal({ webhookId = 'WH-MOCK-0001', resendResigns = t
         state.refundsInFlight.delete(record.id)
         const amount = body.amount?.value ? String(body.amount.value) : record.amount
         if (refundedCents(record.id) + cents(amount) > cents(record.amount)) return fail(res, 422, 'UNPROCESSABLE_ENTITY', 'REFUND_AMOUNT_EXCEEDED', 'The refund amount must be less than or equal to the capture amount that has not yet been refunded.')
-        const refund = { id: paypalId(), captureId: record.id, amount, createdAt: new Date().toISOString() }
+        // Measured on the sandbox (2026-11-12, refund 21J38299VE4849725): custom_id comes back on the refund reply and in GET order refunds[].
+        const refund = { id: paypalId(), captureId: record.id, amount, createdAt: new Date().toISOString(), ...(body.custom_id ? { customId: String(body.custom_id) } : {}) }
         state.refunds.set(refund.id, refund)
         if (memoKey) state.requestIds.set(memoKey, refund.id)
         reply(res, 201, refundView(refund))

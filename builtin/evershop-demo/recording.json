@@ -1,0 +1,576 @@
+{
+  "id": "evershop-demo",
+  "name": "A purchase made inside an unmodified EverShop 2.4.0 (local PayPal stand-in)",
+  "source": "builtin-mock",
+  "targetId": "evershop",
+  "webhookId": "WH-MOCK-0001",
+  "createdAt": "2026-11-12T06:48:12.653Z",
+  "orderId": "7BD98D6D7E542AF99",
+  "captureId": "FFC9F44BF69E6ADED",
+  "deliveries": [
+    {
+      "seq": 1,
+      "label": "approved",
+      "receivedAt": "2026-11-12T06:48:12.666Z",
+      "eventType": "CHECKOUT.ORDER.APPROVED",
+      "eventId": "WH-4C275507AEDAA1A64",
+      "headers": {
+        "paypal-transmission-id": "4eea5f81-6300-4c41-8b0a-bd114ba31552",
+        "paypal-transmission-time": "2026-11-12T06:48:12.655Z",
+        "paypal-transmission-sig": "o4ayGzmgACqGuNb1qB9wIJJ8eEOSjEUKVkPS2cpzrnej//nffTFfwLvTfi4fchdIklNYq7Xfj6djA5VtjXyHAQUuwLfu+MnenzpO+RQQsaGDguG5uAw58qejJFPgCkomwb5gTkuKnj1ZNafPveVQuyucM/6/5/0jg+qCtTJFg0yQNcJZSt6CEG76omSJSIfseZl57CoDruDDixyCbu96Ia3Wn6fU9JczkxMA3HPtkSMBrrcwL71I7nJ63xMpNr+BvoU+nC1ErmbE782g0yNkkEnzJudWBhwa+Za6HMcZ928wKVhHbr1I4K75urYPTn02KIOssp6yIQKZB3T92rp+CA==",
+        "paypal-cert-url": "https://api-m.sandbox.paypal.com/v1/notifications/certs/CERT-MOCK-0001",
+        "paypal-auth-algo": "SHA256withRSA",
+        "paypal-auth-version": "v2",
+        "content-type": "application/json"
+      },
+      "bodyBase64": "eyJpZCI6IldILTRDMjc1NTA3QUVEQUExQTY0IiwiZXZlbnRfdmVyc2lvbiI6IjEuMCIsImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoxMi42NTVaIiwicmVzb3VyY2VfdHlwZSI6ImNoZWNrb3V0LW9yZGVyIiwicmVzb3VyY2VfdmVyc2lvbiI6IjIuMCIsImV2ZW50X3R5cGUiOiJDSEVDS09VVC5PUkRFUi5BUFBST1ZFRCIsInN1bW1hcnkiOiJBbiBvcmRlciBoYXMgYmVlbiBhcHByb3ZlZCBieSBidXllciIsInJlc291cmNlIjp7ImlkIjoiN0JEOThENkQ3RTU0MkFGOTkiLCJzdGF0dXMiOiJBUFBST1ZFRCIsImludGVudCI6IkNBUFRVUkUiLCJwdXJjaGFzZV91bml0cyI6W3sicmVmZXJlbmNlX2lkIjoiZGVmYXVsdCIsImFtb3VudCI6eyJjdXJyZW5jeV9jb2RlIjoiVVNEIiwidmFsdWUiOiIxMi4wMCJ9LCJwYXllZSI6eyJlbWFpbF9hZGRyZXNzIjoibWVyY2hhbnRAZXhhbXBsZS50ZXN0IiwibWVyY2hhbnRfaWQiOiJNT0NLTUVSQ0hBTlQifSwicGF5bWVudHMiOnt9fV0sImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoxMi42MjhaIiwibGlua3MiOlt7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YyL2NoZWNrb3V0L29yZGVycy83QkQ5OEQ2RDdFNTQyQUY5OSIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL2NoZWNrb3V0bm93P3Rva2VuPTdCRDk4RDZEN0U1NDJBRjk5IiwicmVsIjoiYXBwcm92ZSIsIm1ldGhvZCI6IkdFVCJ9XX0sImxpbmtzIjpbeyJocmVmIjoiaHR0cDovLzEyNy4wLjAuMTo0MjExMy92MS9ub3RpZmljYXRpb25zL3dlYmhvb2tzLWV2ZW50cy9XSC00QzI3NTUwN0FFREFBMUE2NCIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YxL25vdGlmaWNhdGlvbnMvd2ViaG9va3MtZXZlbnRzL1dILTRDMjc1NTA3QUVEQUExQTY0L3Jlc2VuZCIsInJlbCI6InJlc2VuZCIsIm1ldGhvZCI6IlBPU1QifV19",
+      "targetResponse": {
+        "status": 200,
+        "body": "{\"data\":{}}",
+        "ms": 111
+      }
+    },
+    {
+      "seq": 2,
+      "label": "completed",
+      "receivedAt": "2026-11-12T06:48:15.540Z",
+      "eventType": "PAYMENT.CAPTURE.COMPLETED",
+      "eventId": "WH-A7979E622EDE51746",
+      "headers": {
+        "paypal-transmission-id": "8a10da14-6a0d-4ac4-8187-575124d474ec",
+        "paypal-transmission-time": "2026-11-12T06:48:15.536Z",
+        "paypal-transmission-sig": "bDCi/3t4i+ZI+wBF9wo0Lxg5a2Sef3kVnOZoZpjGrwvOgtnIVBI+OnYDIPDx7+GOPaXQpUatR9GOw7aEBsuzUaPS1CHzjiPZ22gEqxYKsxBhRfqye7Lz9cSpv9wOcSLnsSJqyJMSKuwF54YKiQs7ANdd3gahWapr0w6alXrN78MXaMUMt8EwI0hC3Mm8tlE+hGzttmVAv0ar+NaQVAjTmV+2rTj8PK8GWsBV60dmjOsToZXukHRdGWtXZIOSgXC4H/W6159apguQc7L9Im3kzUUHbK2cE1z9HqpDOeMjc5LTe8VhuqCN0/+W6jcKkvXJv1ZYQMj8qmUCfZucF6GVIg==",
+        "paypal-cert-url": "https://api-m.sandbox.paypal.com/v1/notifications/certs/CERT-MOCK-0001",
+        "paypal-auth-algo": "SHA256withRSA",
+        "paypal-auth-version": "v2",
+        "content-type": "application/json"
+      },
+      "bodyBase64": "eyJpZCI6IldILUE3OTc5RTYyMkVERTUxNzQ2IiwiZXZlbnRfdmVyc2lvbiI6IjEuMCIsImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoxNS41MzZaIiwicmVzb3VyY2VfdHlwZSI6ImNhcHR1cmUiLCJyZXNvdXJjZV92ZXJzaW9uIjoiMi4wIiwiZXZlbnRfdHlwZSI6IlBBWU1FTlQuQ0FQVFVSRS5DT01QTEVURUQiLCJzdW1tYXJ5IjoiUGF5bWVudCBjb21wbGV0ZWQgZm9yICQgMTIuMDAgVVNEIiwicmVzb3VyY2UiOnsiaWQiOiJGRkM5RjQ0QkY2OUU2QURFRCIsInN0YXR1cyI6IkNPTVBMRVRFRCIsImFtb3VudCI6eyJjdXJyZW5jeV9jb2RlIjoiVVNEIiwidmFsdWUiOiIxMi4wMCJ9LCJmaW5hbF9jYXB0dXJlIjp0cnVlLCJzZWxsZXJfcHJvdGVjdGlvbiI6eyJzdGF0dXMiOiJFTElHSUJMRSIsImRpc3B1dGVfY2F0ZWdvcmllcyI6WyJJVEVNX05PVF9SRUNFSVZFRCIsIlVOQVVUSE9SSVpFRF9UUkFOU0FDVElPTiJdfSwiY3JlYXRlX3RpbWUiOiIyMDI2LTExLTEyVDA2OjQ4OjE1LjUzM1oiLCJ1cGRhdGVfdGltZSI6IjIwMjYtMTEtMTJUMDY6NDg6MTUuNTMzWiIsImxpbmtzIjpbeyJocmVmIjoiaHR0cDovLzEyNy4wLjAuMTo0MjExMy92Mi9wYXltZW50cy9jYXB0dXJlcy9GRkM5RjQ0QkY2OUU2QURFRCIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YyL3BheW1lbnRzL2NhcHR1cmVzL0ZGQzlGNDRCRjY5RTZBREVEL3JlZnVuZCIsInJlbCI6InJlZnVuZCIsIm1ldGhvZCI6IlBPU1QifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YyL2NoZWNrb3V0L29yZGVycy83QkQ5OEQ2RDdFNTQyQUY5OSIsInJlbCI6InVwIiwibWV0aG9kIjoiR0VUIn1dLCJzdXBwbGVtZW50YXJ5X2RhdGEiOnsicmVsYXRlZF9pZHMiOnsib3JkZXJfaWQiOiI3QkQ5OEQ2RDdFNTQyQUY5OSJ9fX0sImxpbmtzIjpbeyJocmVmIjoiaHR0cDovLzEyNy4wLjAuMTo0MjExMy92MS9ub3RpZmljYXRpb25zL3dlYmhvb2tzLWV2ZW50cy9XSC1BNzk3OUU2MjJFREU1MTc0NiIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YxL25vdGlmaWNhdGlvbnMvd2ViaG9va3MtZXZlbnRzL1dILUE3OTc5RTYyMkVERTUxNzQ2L3Jlc2VuZCIsInJlbCI6InJlc2VuZCIsIm1ldGhvZCI6IlBPU1QifV19",
+      "targetResponse": {
+        "status": 200,
+        "body": "{\"data\":{}}",
+        "ms": 32
+      }
+    },
+    {
+      "seq": 3,
+      "label": "refund1",
+      "receivedAt": "2026-11-12T06:48:17.997Z",
+      "eventType": "PAYMENT.CAPTURE.REFUNDED",
+      "eventId": "WH-E5EE865F6B37ACB11",
+      "headers": {
+        "paypal-transmission-id": "321d5d5c-ef8c-4f16-bf91-b79861baff61",
+        "paypal-transmission-time": "2026-11-12T06:48:17.994Z",
+        "paypal-transmission-sig": "GFHBaxPnIQE3w4VjjN9GfmZkNWSO1iEKdh9Hv2E5u1xxxDxiZZSEC1aSRN//ETVOUiuwXotCEnAODx/+ngCFuIkzKIKX2WktMlB53TWCsdAxoXmpBp0PxJyjpv+uWUFZqlWwwhlmiVX8Bq67hDyNHOVkIjXImw2UgZc5u1vtd+nJyN493txnkFm5wXVGBm3ENCWEZmX1j7jb3JdlszrEot+2l7JUD0+lG0Dq64n/hCaJM0KY3JVDU3+nyQ5ttxK16ClNyp3SymdXzLGgyn6eB8jmy2boN8ie+3mj5KRsENXNT5cLeB6Yh6GO6O/89MJl98/0YNF6dhZ2GQVzGwG6Tw==",
+        "paypal-cert-url": "https://api-m.sandbox.paypal.com/v1/notifications/certs/CERT-MOCK-0001",
+        "paypal-auth-algo": "SHA256withRSA",
+        "paypal-auth-version": "v2",
+        "content-type": "application/json"
+      },
+      "bodyBase64": "eyJpZCI6IldILUU1RUU4NjVGNkIzN0FDQjExIiwiZXZlbnRfdmVyc2lvbiI6IjEuMCIsImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoxNy45OTRaIiwicmVzb3VyY2VfdHlwZSI6InJlZnVuZCIsInJlc291cmNlX3ZlcnNpb24iOiIyLjAiLCJldmVudF90eXBlIjoiUEFZTUVOVC5DQVBUVVJFLlJFRlVOREVEIiwic3VtbWFyeSI6IkEgJCA0LjAwIFVTRCBjYXB0dXJlIHBheW1lbnQgd2FzIHJlZnVuZGVkIiwicmVzb3VyY2UiOnsiaWQiOiJFODdEOTBDREUzNTU3Nzc4MCIsInN0YXR1cyI6IkNPTVBMRVRFRCIsImFtb3VudCI6eyJjdXJyZW5jeV9jb2RlIjoiVVNEIiwidmFsdWUiOiI0LjAwIn0sImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoxNy45OTNaIiwidXBkYXRlX3RpbWUiOiIyMDI2LTExLTEyVDA2OjQ4OjE3Ljk5M1oiLCJsaW5rcyI6W3siaHJlZiI6Imh0dHA6Ly8xMjcuMC4wLjE6NDIxMTMvdjIvcGF5bWVudHMvcmVmdW5kcy9FODdEOTBDREUzNTU3Nzc4MCIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YyL3BheW1lbnRzL2NhcHR1cmVzL0ZGQzlGNDRCRjY5RTZBREVEIiwicmVsIjoidXAiLCJtZXRob2QiOiJHRVQifV19LCJsaW5rcyI6W3siaHJlZiI6Imh0dHA6Ly8xMjcuMC4wLjE6NDIxMTMvdjEvbm90aWZpY2F0aW9ucy93ZWJob29rcy1ldmVudHMvV0gtRTVFRTg2NUY2QjM3QUNCMTEiLCJyZWwiOiJzZWxmIiwibWV0aG9kIjoiR0VUIn0seyJocmVmIjoiaHR0cDovLzEyNy4wLjAuMTo0MjExMy92MS9ub3RpZmljYXRpb25zL3dlYmhvb2tzLWV2ZW50cy9XSC1FNUVFODY1RjZCMzdBQ0IxMS9yZXNlbmQiLCJyZWwiOiJyZXNlbmQiLCJtZXRob2QiOiJQT1NUIn1dfQ==",
+      "targetResponse": {
+        "status": 200,
+        "body": "{\"data\":{}}",
+        "ms": 63
+      }
+    },
+    {
+      "seq": 4,
+      "label": "refund2",
+      "receivedAt": "2026-11-12T06:48:20.935Z",
+      "eventType": "PAYMENT.CAPTURE.REFUNDED",
+      "eventId": "WH-F8218581AB28E8CA8",
+      "headers": {
+        "paypal-transmission-id": "2fe9b159-a8b5-42a0-8fd9-0c9a72eccd47",
+        "paypal-transmission-time": "2026-11-12T06:48:20.932Z",
+        "paypal-transmission-sig": "FGzUd00z0+O7q4tt8NjBq33399iN950MYrt7m1XNSA7vsTZo2/MzjTBEuX/N0hZoAuWEdSkXGF121BTmhxmboleYMB85TgTl7xl78ixfdeRz+RUjM7uHZ5hY+5c3OSOrIW8RnJiq5RMq334o4h/i0F4uLj3Dh2VliKUXaXsETzuj+N2+G1VkptwNhdugHvWKSbSqiAzOGnE+kB5kL6RbDH+7Cq8XCbHCoxJUVx25ygF+lv+Kc53JkHS3a4k776xBCizOjswXGovM56Xa9OhIjROiObPIfBqQ6Xbbu8U6g99LXYwmJE+3qJwVQEOXlQtDZBUQubKHUOykZlhjAqmsfw==",
+        "paypal-cert-url": "https://api-m.sandbox.paypal.com/v1/notifications/certs/CERT-MOCK-0001",
+        "paypal-auth-algo": "SHA256withRSA",
+        "paypal-auth-version": "v2",
+        "content-type": "application/json"
+      },
+      "bodyBase64": "eyJpZCI6IldILUY4MjE4NTgxQUIyOEU4Q0E4IiwiZXZlbnRfdmVyc2lvbiI6IjEuMCIsImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoyMC45MzJaIiwicmVzb3VyY2VfdHlwZSI6InJlZnVuZCIsInJlc291cmNlX3ZlcnNpb24iOiIyLjAiLCJldmVudF90eXBlIjoiUEFZTUVOVC5DQVBUVVJFLlJFRlVOREVEIiwic3VtbWFyeSI6IkEgJCA4LjAwIFVTRCBjYXB0dXJlIHBheW1lbnQgd2FzIHJlZnVuZGVkIiwicmVzb3VyY2UiOnsiaWQiOiIzNEQ4ODM1NEE4Nzk3NTIyMCIsInN0YXR1cyI6IkNPTVBMRVRFRCIsImFtb3VudCI6eyJjdXJyZW5jeV9jb2RlIjoiVVNEIiwidmFsdWUiOiI4LjAwIn0sImNyZWF0ZV90aW1lIjoiMjAyNi0xMS0xMlQwNjo0ODoyMC45MzJaIiwidXBkYXRlX3RpbWUiOiIyMDI2LTExLTEyVDA2OjQ4OjIwLjkzMloiLCJsaW5rcyI6W3siaHJlZiI6Imh0dHA6Ly8xMjcuMC4wLjE6NDIxMTMvdjIvcGF5bWVudHMvcmVmdW5kcy8zNEQ4ODM1NEE4Nzk3NTIyMCIsInJlbCI6InNlbGYiLCJtZXRob2QiOiJHRVQifSx7ImhyZWYiOiJodHRwOi8vMTI3LjAuMC4xOjQyMTEzL3YyL3BheW1lbnRzL2NhcHR1cmVzL0ZGQzlGNDRCRjY5RTZBREVEIiwicmVsIjoidXAiLCJtZXRob2QiOiJHRVQifV19LCJsaW5rcyI6W3siaHJlZiI6Imh0dHA6Ly8xMjcuMC4wLjE6NDIxMTMvdjEvbm90aWZpY2F0aW9ucy93ZWJob29rcy1ldmVudHMvV0gtRjgyMTg1ODFBQjI4RThDQTgiLCJyZWwiOiJzZWxmIiwibWV0aG9kIjoiR0VUIn0seyJocmVmIjoiaHR0cDovLzEyNy4wLjAuMTo0MjExMy92MS9ub3RpZmljYXRpb25zL3dlYmhvb2tzLWV2ZW50cy9XSC1GODIxODU4MUFCMjhFOENBOC9yZXNlbmQiLCJyZWwiOiJyZXNlbmQiLCJtZXRob2QiOiJQT1NUIn1dfQ==",
+      "targetResponse": {
+        "status": 200,
+        "body": "{\"data\":{}}",
+        "ms": 57
+      }
+    }
+  ],
+  "extras": {},
+  "startPoints": {
+    "SP0": {
+      "file": "snapshots/SP0.sqlite",
+      "fingerprint": {
+        "exists": true,
+        "status": "pending",
+        "on_hold": false,
+        "fulfilled_count": 0,
+        "captures": [],
+        "refunds": [],
+        "processed_event_ids": []
+      },
+      "takenAt": "2026-11-12T06:48:15.469Z"
+    },
+    "SP1": {
+      "file": "snapshots/SP1.sqlite",
+      "fingerprint": {
+        "exists": true,
+        "status": "paypal_captured",
+        "on_hold": false,
+        "fulfilled_count": 0,
+        "captures": [
+          "FFC9F44BF69E6ADED"
+        ],
+        "refunds": [],
+        "processed_event_ids": []
+      },
+      "takenAt": "2026-11-12T06:48:17.876Z"
+    },
+    "SP2": {
+      "file": "snapshots/SP2.sqlite",
+      "fingerprint": {
+        "exists": true,
+        "status": "paypal_partial_refunded",
+        "on_hold": false,
+        "fulfilled_count": 0,
+        "captures": [
+          "FFC9F44BF69E6ADED"
+        ],
+        "refunds": [
+          "E87D90CDE35577780"
+        ],
+        "processed_event_ids": []
+      },
+      "takenAt": "2026-11-12T06:48:20.832Z"
+    },
+    "SP3": {
+      "file": "snapshots/SP3.sqlite",
+      "fingerprint": {
+        "exists": true,
+        "status": "paypal_refunded",
+        "on_hold": false,
+        "fulfilled_count": 0,
+        "captures": [
+          "FFC9F44BF69E6ADED"
+        ],
+        "refunds": [
+          "34D88354A87975220",
+          "E87D90CDE35577780"
+        ],
+        "processed_event_ids": []
+      },
+      "takenAt": "2026-11-12T06:48:23.713Z"
+    }
+  },
+  "contract": null,
+  "ledger": {
+    "orders": [
+      {
+        "id": "8C4843AE9C99E5CAB",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-11T15:59:45.042Z"
+      },
+      {
+        "id": "8576B178E86346981",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-11T15:59:45.121Z"
+      },
+      {
+        "id": "8CE48FF4DFBD411BF",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:10.480Z"
+      },
+      {
+        "id": "F340934DB80B3F35A",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:10.604Z"
+      },
+      {
+        "id": "2F0A085F24FCDEE91",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:11.500Z"
+      },
+      {
+        "id": "84C775090161CE91B",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:11.635Z"
+      },
+      {
+        "id": "A07C8A6E644920E53",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:31.661Z"
+      },
+      {
+        "id": "05AADF3C70107AA15",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:31.779Z"
+      },
+      {
+        "id": "61111A0B1A2BB5537",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:32.829Z"
+      },
+      {
+        "id": "7522D47E07896483A",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:32.899Z"
+      },
+      {
+        "id": "7BD98D6D7E542AF99",
+        "status": "COMPLETED",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:48:12.628Z"
+      }
+    ],
+    "captures": [
+      {
+        "id": "D9EEBF514B338952A",
+        "orderId": "8C4843AE9C99E5CAB",
+        "amount": "12.00",
+        "createdAt": "2026-11-11T15:59:45.067Z"
+      },
+      {
+        "id": "02B7F28A8BBA9DB92",
+        "orderId": "8576B178E86346981",
+        "amount": "12.00",
+        "createdAt": "2026-11-11T15:59:45.187Z"
+      },
+      {
+        "id": "E2DBE6BF082D8EA2A",
+        "orderId": "8CE48FF4DFBD411BF",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:10.521Z"
+      },
+      {
+        "id": "643D569B58E46B44C",
+        "orderId": "F340934DB80B3F35A",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:10.691Z"
+      },
+      {
+        "id": "48365395EF86A50CB",
+        "orderId": "2F0A085F24FCDEE91",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:11.549Z"
+      },
+      {
+        "id": "0EA7B7F3E2A9E3DA6",
+        "orderId": "84C775090161CE91B",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:02:11.745Z"
+      },
+      {
+        "id": "1534EFBD4C0E326BE",
+        "orderId": "A07C8A6E644920E53",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:31.698Z"
+      },
+      {
+        "id": "82F157A2CC16ABDC1",
+        "orderId": "05AADF3C70107AA15",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:31.871Z"
+      },
+      {
+        "id": "C0EACD6D1454AD646",
+        "orderId": "61111A0B1A2BB5537",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:32.852Z"
+      },
+      {
+        "id": "37699375FA2070F8B",
+        "orderId": "7522D47E07896483A",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:39:32.962Z"
+      },
+      {
+        "id": "FFC9F44BF69E6ADED",
+        "orderId": "7BD98D6D7E542AF99",
+        "amount": "12.00",
+        "createdAt": "2026-11-12T06:48:15.533Z"
+      }
+    ],
+    "refunds": [
+      {
+        "id": "DACAF6C39F6FCEB3F",
+        "captureId": "02B7F28A8BBA9DB92",
+        "amount": "4.00",
+        "createdAt": "2026-11-11T15:59:45.253Z"
+      },
+      {
+        "id": "81BDE91769BBEDAC2",
+        "captureId": "02B7F28A8BBA9DB92",
+        "amount": "8.00",
+        "createdAt": "2026-11-11T15:59:45.328Z"
+      },
+      {
+        "id": "A81BA35510136E8AD",
+        "captureId": "643D569B58E46B44C",
+        "amount": "4.00",
+        "createdAt": "2026-11-12T06:02:10.755Z"
+      },
+      {
+        "id": "E23B79BA76D8DE95F",
+        "captureId": "643D569B58E46B44C",
+        "amount": "8.00",
+        "createdAt": "2026-11-12T06:02:10.829Z"
+      },
+      {
+        "id": "3F4E5CC0D301A7092",
+        "captureId": "0EA7B7F3E2A9E3DA6",
+        "amount": "4.00",
+        "createdAt": "2026-11-12T06:02:11.820Z"
+      },
+      {
+        "id": "A9A0BCAD0DE0F2DAC",
+        "captureId": "0EA7B7F3E2A9E3DA6",
+        "amount": "8.00",
+        "createdAt": "2026-11-12T06:02:11.896Z"
+      },
+      {
+        "id": "FD7F391824A656D56",
+        "captureId": "82F157A2CC16ABDC1",
+        "amount": "4.00",
+        "createdAt": "2026-11-12T06:39:31.983Z"
+      },
+      {
+        "id": "03DB52D709AD0093C",
+        "captureId": "82F157A2CC16ABDC1",
+        "amount": "8.00",
+        "createdAt": "2026-11-12T06:39:32.118Z"
+      },
+      {
+        "id": "C2184DCED6C0694DE",
+        "captureId": "37699375FA2070F8B",
+        "amount": "4.00",
+        "createdAt": "2026-11-12T06:39:33.059Z"
+      },
+      {
+        "id": "FFC95AE745CF7FAB2",
+        "captureId": "37699375FA2070F8B",
+        "amount": "8.00",
+        "createdAt": "2026-11-12T06:39:33.155Z"
+      },
+      {
+        "id": "E87D90CDE35577780",
+        "captureId": "FFC9F44BF69E6ADED",
+        "amount": "4.00",
+        "createdAt": "2026-11-12T06:48:17.993Z"
+      },
+      {
+        "id": "34D88354A87975220",
+        "captureId": "FFC9F44BF69E6ADED",
+        "amount": "8.00",
+        "createdAt": "2026-11-12T06:48:20.932Z"
+      }
+    ],
+    "events": [
+      {
+        "id": "WH-BC992075607A43088",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-BC992075607A43088\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.060Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"8C4843AE9C99E5CAB\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-11T15:59:45.042Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/checkout/orders/8C4843AE9C99E5CAB\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/checkoutnow?token=8C4843AE9C99E5CAB\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-BC992075607A43088\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-BC992075607A43088/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-9B885F8012A93146B",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-9B885F8012A93146B\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.067Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"D9EEBF514B338952A\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-11T15:59:45.067Z\",\"update_time\":\"2026-11-11T15:59:45.067Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/D9EEBF514B338952A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/D9EEBF514B338952A/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:39357/v2/checkout/orders/8C4843AE9C99E5CAB\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"8C4843AE9C99E5CAB\"}}},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-9B885F8012A93146B\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-9B885F8012A93146B/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-6397FD0CC09BAB30B",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-6397FD0CC09BAB30B\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.150Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"8576B178E86346981\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-11T15:59:45.121Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/checkout/orders/8576B178E86346981\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/checkoutnow?token=8576B178E86346981\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-6397FD0CC09BAB30B\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-6397FD0CC09BAB30B/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-21ABA697FB818AA99",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-21ABA697FB818AA99\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.187Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"02B7F28A8BBA9DB92\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-11T15:59:45.187Z\",\"update_time\":\"2026-11-11T15:59:45.187Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/02B7F28A8BBA9DB92\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/02B7F28A8BBA9DB92/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:39357/v2/checkout/orders/8576B178E86346981\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"8576B178E86346981\"}}},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-21ABA697FB818AA99\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-21ABA697FB818AA99/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-7287E2E25374718A2",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-7287E2E25374718A2\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.253Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"DACAF6C39F6FCEB3F\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-11T15:59:45.253Z\",\"update_time\":\"2026-11-11T15:59:45.253Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/payments/refunds/DACAF6C39F6FCEB3F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/02B7F28A8BBA9DB92\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-7287E2E25374718A2\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-7287E2E25374718A2/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5EFC1BDECCCC4BB9E",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-5EFC1BDECCCC4BB9E\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.328Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"81BDE91769BBEDAC2\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-11T15:59:45.328Z\",\"update_time\":\"2026-11-11T15:59:45.328Z\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v2/payments/refunds/81BDE91769BBEDAC2\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v2/payments/captures/02B7F28A8BBA9DB92\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-5EFC1BDECCCC4BB9E\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-5EFC1BDECCCC4BB9E/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-433ECF9B86EA1D9D1",
+        "eventType": "CUSTOMER.DISPUTE.CREATED",
+        "bodyText": "{\"id\":\"WH-433ECF9B86EA1D9D1\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-11T15:59:45.391Z\",\"resource_type\":\"dispute\",\"resource_version\":\"2.0\",\"event_type\":\"CUSTOMER.DISPUTE.CREATED\",\"summary\":\"A new dispute opened with Sandbox Buyer\",\"resource\":{\"dispute_id\":\"PP-D-194833E7E\",\"create_time\":\"2026-11-11T15:59:45.391Z\",\"update_time\":\"2026-11-11T15:59:45.391Z\",\"disputed_transactions\":[{\"seller_transaction_id\":\"02B7F28A8BBA9DB92\",\"create_time\":\"2026-11-11T15:59:45.187Z\",\"transaction_status\":\"COMPLETED\",\"gross_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"buyer\":{\"name\":\"Sandbox Buyer\"}}],\"reason\":\"MERCHANDISE_OR_SERVICE_NOT_RECEIVED\",\"status\":\"OPEN\",\"dispute_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"dispute_life_cycle_stage\":\"INQUIRY\",\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/customer/disputes/PP-D-194833E7E\",\"rel\":\"self\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-433ECF9B86EA1D9D1\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39357/v1/notifications/webhooks-events/WH-433ECF9B86EA1D9D1/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5D622BBB2B9559614",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-5D622BBB2B9559614\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.494Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"8CE48FF4DFBD411BF\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:02:10.480Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/checkout/orders/8CE48FF4DFBD411BF\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/checkoutnow?token=8CE48FF4DFBD411BF\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-5D622BBB2B9559614\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-5D622BBB2B9559614/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-721635065ED2C50E6",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-721635065ED2C50E6\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.522Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"E2DBE6BF082D8EA2A\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:02:10.521Z\",\"update_time\":\"2026-11-12T06:02:10.521Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/E2DBE6BF082D8EA2A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/E2DBE6BF082D8EA2A/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:36853/v2/checkout/orders/8CE48FF4DFBD411BF\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"8CE48FF4DFBD411BF\"}}},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-721635065ED2C50E6\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-721635065ED2C50E6/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-A92E987FFC9C7F01F",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-A92E987FFC9C7F01F\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.633Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"F340934DB80B3F35A\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:02:10.604Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/checkout/orders/F340934DB80B3F35A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/checkoutnow?token=F340934DB80B3F35A\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-A92E987FFC9C7F01F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-A92E987FFC9C7F01F/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-C5C0072252522C9C7",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-C5C0072252522C9C7\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.692Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"643D569B58E46B44C\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:02:10.691Z\",\"update_time\":\"2026-11-12T06:02:10.691Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/643D569B58E46B44C\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/643D569B58E46B44C/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:36853/v2/checkout/orders/F340934DB80B3F35A\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"F340934DB80B3F35A\"}}},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-C5C0072252522C9C7\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-C5C0072252522C9C7/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-04852AC9547CD9677",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-04852AC9547CD9677\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.756Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"A81BA35510136E8AD\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-12T06:02:10.755Z\",\"update_time\":\"2026-11-12T06:02:10.755Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/payments/refunds/A81BA35510136E8AD\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/643D569B58E46B44C\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-04852AC9547CD9677\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-04852AC9547CD9677/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-596A93AA2E1AFB94C",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-596A93AA2E1AFB94C\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.829Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"E23B79BA76D8DE95F\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-12T06:02:10.829Z\",\"update_time\":\"2026-11-12T06:02:10.829Z\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v2/payments/refunds/E23B79BA76D8DE95F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v2/payments/captures/643D569B58E46B44C\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-596A93AA2E1AFB94C\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-596A93AA2E1AFB94C/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-C24CC1D082ADA6206",
+        "eventType": "CUSTOMER.DISPUTE.CREATED",
+        "bodyText": "{\"id\":\"WH-C24CC1D082ADA6206\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:10.890Z\",\"resource_type\":\"dispute\",\"resource_version\":\"2.0\",\"event_type\":\"CUSTOMER.DISPUTE.CREATED\",\"summary\":\"A new dispute opened with Sandbox Buyer\",\"resource\":{\"dispute_id\":\"PP-D-DB27C8EF7\",\"create_time\":\"2026-11-12T06:02:10.890Z\",\"update_time\":\"2026-11-12T06:02:10.890Z\",\"disputed_transactions\":[{\"seller_transaction_id\":\"643D569B58E46B44C\",\"create_time\":\"2026-11-12T06:02:10.691Z\",\"transaction_status\":\"COMPLETED\",\"gross_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"buyer\":{\"name\":\"Sandbox Buyer\"}}],\"reason\":\"MERCHANDISE_OR_SERVICE_NOT_RECEIVED\",\"status\":\"OPEN\",\"dispute_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"dispute_life_cycle_stage\":\"INQUIRY\",\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/customer/disputes/PP-D-DB27C8EF7\",\"rel\":\"self\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-C24CC1D082ADA6206\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:36853/v1/notifications/webhooks-events/WH-C24CC1D082ADA6206/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-CA898F0CEE377FF2F",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-CA898F0CEE377FF2F\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.524Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"2F0A085F24FCDEE91\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:02:11.500Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/checkout/orders/2F0A085F24FCDEE91\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/checkoutnow?token=2F0A085F24FCDEE91\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-CA898F0CEE377FF2F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-CA898F0CEE377FF2F/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-8A5EFD7031E6DE497",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-8A5EFD7031E6DE497\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.550Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"48365395EF86A50CB\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:02:11.549Z\",\"update_time\":\"2026-11-12T06:02:11.549Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/48365395EF86A50CB\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/48365395EF86A50CB/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:33523/v2/checkout/orders/2F0A085F24FCDEE91\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"2F0A085F24FCDEE91\"}}},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-8A5EFD7031E6DE497\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-8A5EFD7031E6DE497/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5ED7C4B0B63012E0C",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-5ED7C4B0B63012E0C\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.695Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"84C775090161CE91B\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:02:11.635Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/checkout/orders/84C775090161CE91B\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/checkoutnow?token=84C775090161CE91B\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-5ED7C4B0B63012E0C\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-5ED7C4B0B63012E0C/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-369D2401F7C62046A",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-369D2401F7C62046A\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.746Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"0EA7B7F3E2A9E3DA6\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:02:11.745Z\",\"update_time\":\"2026-11-12T06:02:11.745Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/0EA7B7F3E2A9E3DA6\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/0EA7B7F3E2A9E3DA6/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:33523/v2/checkout/orders/84C775090161CE91B\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"84C775090161CE91B\"}}},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-369D2401F7C62046A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-369D2401F7C62046A/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-58742AC16799F9477",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-58742AC16799F9477\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.820Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"3F4E5CC0D301A7092\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-12T06:02:11.820Z\",\"update_time\":\"2026-11-12T06:02:11.820Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/payments/refunds/3F4E5CC0D301A7092\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/0EA7B7F3E2A9E3DA6\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-58742AC16799F9477\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-58742AC16799F9477/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-AC1340D8654EEDE0E",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-AC1340D8654EEDE0E\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.896Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"A9A0BCAD0DE0F2DAC\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-12T06:02:11.896Z\",\"update_time\":\"2026-11-12T06:02:11.896Z\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v2/payments/refunds/A9A0BCAD0DE0F2DAC\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v2/payments/captures/0EA7B7F3E2A9E3DA6\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-AC1340D8654EEDE0E\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-AC1340D8654EEDE0E/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-162A99A0D1B1186EE",
+        "eventType": "CUSTOMER.DISPUTE.CREATED",
+        "bodyText": "{\"id\":\"WH-162A99A0D1B1186EE\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:02:11.971Z\",\"resource_type\":\"dispute\",\"resource_version\":\"2.0\",\"event_type\":\"CUSTOMER.DISPUTE.CREATED\",\"summary\":\"A new dispute opened with Sandbox Buyer\",\"resource\":{\"dispute_id\":\"PP-D-336578D10\",\"create_time\":\"2026-11-12T06:02:11.971Z\",\"update_time\":\"2026-11-12T06:02:11.971Z\",\"disputed_transactions\":[{\"seller_transaction_id\":\"0EA7B7F3E2A9E3DA6\",\"create_time\":\"2026-11-12T06:02:11.745Z\",\"transaction_status\":\"COMPLETED\",\"gross_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"buyer\":{\"name\":\"Sandbox Buyer\"}}],\"reason\":\"MERCHANDISE_OR_SERVICE_NOT_RECEIVED\",\"status\":\"OPEN\",\"dispute_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"dispute_life_cycle_stage\":\"INQUIRY\",\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/customer/disputes/PP-D-336578D10\",\"rel\":\"self\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-162A99A0D1B1186EE\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:33523/v1/notifications/webhooks-events/WH-162A99A0D1B1186EE/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-01D1489A26FFDA74F",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-01D1489A26FFDA74F\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:31.689Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"A07C8A6E644920E53\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:39:31.661Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/checkout/orders/A07C8A6E644920E53\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/checkoutnow?token=A07C8A6E644920E53\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-01D1489A26FFDA74F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-01D1489A26FFDA74F/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-8128B3E7A647877EE",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-8128B3E7A647877EE\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:31.699Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"1534EFBD4C0E326BE\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:39:31.698Z\",\"update_time\":\"2026-11-12T06:39:31.698Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/1534EFBD4C0E326BE\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/1534EFBD4C0E326BE/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:40225/v2/checkout/orders/A07C8A6E644920E53\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"A07C8A6E644920E53\"}}},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-8128B3E7A647877EE\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-8128B3E7A647877EE/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-C80EE8D011BF1D21F",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-C80EE8D011BF1D21F\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:31.823Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"05AADF3C70107AA15\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:39:31.779Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/checkout/orders/05AADF3C70107AA15\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/checkoutnow?token=05AADF3C70107AA15\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-C80EE8D011BF1D21F\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-C80EE8D011BF1D21F/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-24A5629993D1CB6FB",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-24A5629993D1CB6FB\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:31.871Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"82F157A2CC16ABDC1\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:39:31.871Z\",\"update_time\":\"2026-11-12T06:39:31.871Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/82F157A2CC16ABDC1\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/82F157A2CC16ABDC1/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:40225/v2/checkout/orders/05AADF3C70107AA15\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"05AADF3C70107AA15\"}}},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-24A5629993D1CB6FB\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-24A5629993D1CB6FB/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5A07129971DCFA21A",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-5A07129971DCFA21A\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:31.984Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"FD7F391824A656D56\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-12T06:39:31.983Z\",\"update_time\":\"2026-11-12T06:39:31.983Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/payments/refunds/FD7F391824A656D56\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/82F157A2CC16ABDC1\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-5A07129971DCFA21A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-5A07129971DCFA21A/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-06A07FCDE687926E0",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-06A07FCDE687926E0\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.118Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"03DB52D709AD0093C\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-12T06:39:32.118Z\",\"update_time\":\"2026-11-12T06:39:32.118Z\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v2/payments/refunds/03DB52D709AD0093C\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v2/payments/captures/82F157A2CC16ABDC1\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-06A07FCDE687926E0\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-06A07FCDE687926E0/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-ADB26247173618AEE",
+        "eventType": "CUSTOMER.DISPUTE.CREATED",
+        "bodyText": "{\"id\":\"WH-ADB26247173618AEE\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.190Z\",\"resource_type\":\"dispute\",\"resource_version\":\"2.0\",\"event_type\":\"CUSTOMER.DISPUTE.CREATED\",\"summary\":\"A new dispute opened with Sandbox Buyer\",\"resource\":{\"dispute_id\":\"PP-D-DA0696C00\",\"create_time\":\"2026-11-12T06:39:32.190Z\",\"update_time\":\"2026-11-12T06:39:32.190Z\",\"disputed_transactions\":[{\"seller_transaction_id\":\"82F157A2CC16ABDC1\",\"create_time\":\"2026-11-12T06:39:31.871Z\",\"transaction_status\":\"COMPLETED\",\"gross_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"buyer\":{\"name\":\"Sandbox Buyer\"}}],\"reason\":\"MERCHANDISE_OR_SERVICE_NOT_RECEIVED\",\"status\":\"OPEN\",\"dispute_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"dispute_life_cycle_stage\":\"INQUIRY\",\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/customer/disputes/PP-D-DA0696C00\",\"rel\":\"self\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-ADB26247173618AEE\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:40225/v1/notifications/webhooks-events/WH-ADB26247173618AEE/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5C13BC015921E8ACA",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-5C13BC015921E8ACA\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.841Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"61111A0B1A2BB5537\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:39:32.829Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/checkout/orders/61111A0B1A2BB5537\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/checkoutnow?token=61111A0B1A2BB5537\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-5C13BC015921E8ACA\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-5C13BC015921E8ACA/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-E6B8E802EB8F5DFEF",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-E6B8E802EB8F5DFEF\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.852Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"C0EACD6D1454AD646\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:39:32.852Z\",\"update_time\":\"2026-11-12T06:39:32.852Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/C0EACD6D1454AD646\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/C0EACD6D1454AD646/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:39285/v2/checkout/orders/61111A0B1A2BB5537\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"61111A0B1A2BB5537\"}}},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-E6B8E802EB8F5DFEF\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-E6B8E802EB8F5DFEF/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-12601B7D9D2AD65F7",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-12601B7D9D2AD65F7\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.923Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"7522D47E07896483A\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:39:32.899Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/checkout/orders/7522D47E07896483A\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/checkoutnow?token=7522D47E07896483A\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-12601B7D9D2AD65F7\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-12601B7D9D2AD65F7/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-83605C29D4EC01DC5",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-83605C29D4EC01DC5\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:32.962Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"37699375FA2070F8B\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:39:32.962Z\",\"update_time\":\"2026-11-12T06:39:32.962Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/37699375FA2070F8B\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/37699375FA2070F8B/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:39285/v2/checkout/orders/7522D47E07896483A\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"7522D47E07896483A\"}}},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-83605C29D4EC01DC5\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-83605C29D4EC01DC5/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-6AA4657CE02AEA2E4",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-6AA4657CE02AEA2E4\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:33.059Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"C2184DCED6C0694DE\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-12T06:39:33.059Z\",\"update_time\":\"2026-11-12T06:39:33.059Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/payments/refunds/C2184DCED6C0694DE\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/37699375FA2070F8B\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-6AA4657CE02AEA2E4\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-6AA4657CE02AEA2E4/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-4F75279CE15593788",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-4F75279CE15593788\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:33.155Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"FFC95AE745CF7FAB2\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-12T06:39:33.155Z\",\"update_time\":\"2026-11-12T06:39:33.155Z\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v2/payments/refunds/FFC95AE745CF7FAB2\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v2/payments/captures/37699375FA2070F8B\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-4F75279CE15593788\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-4F75279CE15593788/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-5FE0D682F58F9AA44",
+        "eventType": "CUSTOMER.DISPUTE.CREATED",
+        "bodyText": "{\"id\":\"WH-5FE0D682F58F9AA44\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:39:33.191Z\",\"resource_type\":\"dispute\",\"resource_version\":\"2.0\",\"event_type\":\"CUSTOMER.DISPUTE.CREATED\",\"summary\":\"A new dispute opened with Sandbox Buyer\",\"resource\":{\"dispute_id\":\"PP-D-EB60D1F02\",\"create_time\":\"2026-11-12T06:39:33.191Z\",\"update_time\":\"2026-11-12T06:39:33.191Z\",\"disputed_transactions\":[{\"seller_transaction_id\":\"37699375FA2070F8B\",\"create_time\":\"2026-11-12T06:39:32.962Z\",\"transaction_status\":\"COMPLETED\",\"gross_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"buyer\":{\"name\":\"Sandbox Buyer\"}}],\"reason\":\"MERCHANDISE_OR_SERVICE_NOT_RECEIVED\",\"status\":\"OPEN\",\"dispute_amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"dispute_life_cycle_stage\":\"INQUIRY\",\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/customer/disputes/PP-D-EB60D1F02\",\"rel\":\"self\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-5FE0D682F58F9AA44\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:39285/v1/notifications/webhooks-events/WH-5FE0D682F58F9AA44/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-4C275507AEDAA1A64",
+        "eventType": "CHECKOUT.ORDER.APPROVED",
+        "bodyText": "{\"id\":\"WH-4C275507AEDAA1A64\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:48:12.655Z\",\"resource_type\":\"checkout-order\",\"resource_version\":\"2.0\",\"event_type\":\"CHECKOUT.ORDER.APPROVED\",\"summary\":\"An order has been approved by buyer\",\"resource\":{\"id\":\"7BD98D6D7E542AF99\",\"status\":\"APPROVED\",\"intent\":\"CAPTURE\",\"purchase_units\":[{\"reference_id\":\"default\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"payee\":{\"email_address\":\"merchant@example.test\",\"merchant_id\":\"MOCKMERCHANT\"},\"payments\":{}}],\"create_time\":\"2026-11-12T06:48:12.628Z\",\"links\":[{\"href\":\"http://127.0.0.1:42113/v2/checkout/orders/7BD98D6D7E542AF99\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/checkoutnow?token=7BD98D6D7E542AF99\",\"rel\":\"approve\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-4C275507AEDAA1A64\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-4C275507AEDAA1A64/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-A7979E622EDE51746",
+        "eventType": "PAYMENT.CAPTURE.COMPLETED",
+        "bodyText": "{\"id\":\"WH-A7979E622EDE51746\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:48:15.536Z\",\"resource_type\":\"capture\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.COMPLETED\",\"summary\":\"Payment completed for $ 12.00 USD\",\"resource\":{\"id\":\"FFC9F44BF69E6ADED\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"12.00\"},\"final_capture\":true,\"seller_protection\":{\"status\":\"ELIGIBLE\",\"dispute_categories\":[\"ITEM_NOT_RECEIVED\",\"UNAUTHORIZED_TRANSACTION\"]},\"create_time\":\"2026-11-12T06:48:15.533Z\",\"update_time\":\"2026-11-12T06:48:15.533Z\",\"links\":[{\"href\":\"http://127.0.0.1:42113/v2/payments/captures/FFC9F44BF69E6ADED\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v2/payments/captures/FFC9F44BF69E6ADED/refund\",\"rel\":\"refund\",\"method\":\"POST\"},{\"href\":\"http://127.0.0.1:42113/v2/checkout/orders/7BD98D6D7E542AF99\",\"rel\":\"up\",\"method\":\"GET\"}],\"supplementary_data\":{\"related_ids\":{\"order_id\":\"7BD98D6D7E542AF99\"}}},\"links\":[{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-A7979E622EDE51746\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-A7979E622EDE51746/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-E5EE865F6B37ACB11",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-E5EE865F6B37ACB11\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:48:17.994Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 4.00 USD capture payment was refunded\",\"resource\":{\"id\":\"E87D90CDE35577780\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"4.00\"},\"create_time\":\"2026-11-12T06:48:17.993Z\",\"update_time\":\"2026-11-12T06:48:17.993Z\",\"links\":[{\"href\":\"http://127.0.0.1:42113/v2/payments/refunds/E87D90CDE35577780\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v2/payments/captures/FFC9F44BF69E6ADED\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-E5EE865F6B37ACB11\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-E5EE865F6B37ACB11/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      },
+      {
+        "id": "WH-F8218581AB28E8CA8",
+        "eventType": "PAYMENT.CAPTURE.REFUNDED",
+        "bodyText": "{\"id\":\"WH-F8218581AB28E8CA8\",\"event_version\":\"1.0\",\"create_time\":\"2026-11-12T06:48:20.932Z\",\"resource_type\":\"refund\",\"resource_version\":\"2.0\",\"event_type\":\"PAYMENT.CAPTURE.REFUNDED\",\"summary\":\"A $ 8.00 USD capture payment was refunded\",\"resource\":{\"id\":\"34D88354A87975220\",\"status\":\"COMPLETED\",\"amount\":{\"currency_code\":\"USD\",\"value\":\"8.00\"},\"create_time\":\"2026-11-12T06:48:20.932Z\",\"update_time\":\"2026-11-12T06:48:20.932Z\",\"links\":[{\"href\":\"http://127.0.0.1:42113/v2/payments/refunds/34D88354A87975220\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v2/payments/captures/FFC9F44BF69E6ADED\",\"rel\":\"up\",\"method\":\"GET\"}]},\"links\":[{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-F8218581AB28E8CA8\",\"rel\":\"self\",\"method\":\"GET\"},{\"href\":\"http://127.0.0.1:42113/v1/notifications/webhooks-events/WH-F8218581AB28E8CA8/resend\",\"rel\":\"resend\",\"method\":\"POST\"}]}"
+      }
+    ]
+  }
+}

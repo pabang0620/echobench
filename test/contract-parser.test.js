@@ -79,6 +79,7 @@ test('the annotated copy adds only the EchoBench column and leaves the original 
 test('rows map to the right scenario and the invariants are read only', () => {
   assert.equal(scenarioForRow('duplicate-claims', 'refundCapturedPayment'), 'C-DUP')
   assert.equal(scenarioForRow('duplicate-claims', 'captureOrder'), 'C-DUP-CAPTURE')
+  assert.equal(scenarioForRow('unknown-outcomes', 'refund'), 'C-UNK', 'the plugin-generated plan writes plain "refund"')
   assert.equal(scenarioForRow('unknown-outcomes', 'refundCapturedPayment'), 'C-UNK')
   const rows = contractRows(parsePlan(PLAN), {})
   assert.ok(rows.filter((r) => r.kind === 'cross-operation-invariants').every((r) => r.status === 'readonly'))
@@ -90,3 +91,18 @@ test('the inbound events table is titled as EchoBench\'s own and carries results
   assert.match(table.rows.find((r) => r.event === 'PAYMENT.CAPTURE.COMPLETED').proof, /S1 RED, S2 RED, S7 WARN/)
   assert.deepEqual(table.header.at(-1), 'Proven by EchoBench')
 })
+
+test('a plan the plugin really generated, with shortened column names, is read by its section headings (R2 round 2)', () => {
+  const generated = readFileSync(new URL('../targets/ab/sdk-plugin-on/paypal-plan.md', import.meta.url), 'utf8')
+  const parsed = parsePlan(generated)
+  const tables = known(parsed)
+  assert.deepEqual(tables.map((t) => t.kind), ['duplicate-claims', 'unknown-outcomes', 'cross-operation-invariants'])
+  assert.deepEqual(tables[0].writtenHeaders, ['Write', 'Claim store', 'What rejects 2nd', 'Caught where', 'Code'])
+  assert.equal(tables[1].headers[1], 'The operation you re-read with')
+  assert.equal(clean(tables[1].rows[1].cells['The operation you re-read with']), 'getOrder(orderId), find refunds[].customId == refundRef')
+  assert.equal(parsed.blockers.length, 0)
+  const missing = checkCodeNames(parsed, new URL('../targets/ab/sdk-plugin-on', import.meta.url).pathname)
+  assert.deepEqual(missing.map((m) => m.ref), ['src/orders.ts', 'src/refunds.ts'], 'the plan names files the model never wrote')
+})
+
+const clean = (cell) => cell.replace(/`/g, '').trim()

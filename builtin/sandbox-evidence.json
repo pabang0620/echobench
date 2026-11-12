@@ -2,8 +2,20 @@
   "measuredAt": "2026-11-12",
   "environment": "PayPal sandbox (api-m.sandbox.paypal.com)",
   "label": "Measured on the PayPal sandbox on 2026-11-12. Not re-run now: these are recorded results, the ids are the sandbox's own.",
-  "source": "VERIFY.md, Sandbox results (scripts/verify-sandbox.js V4, V5, V8, scripts/sdk-smoke.js V11, scripts/sandbox-contract.js V5b)",
+  "source": "VERIFY.md, Sandbox results (scripts/verify-sandbox.js V4, V5, V8, scripts/sdk-smoke.js V11, scripts/sandbox-contract.js V5b, scripts/record-v1.js V1 on the deployed host)",
   "items": [
+    {
+      "id": "V1",
+      "claim": "Real PayPal sandbox deliveries reach the deployed EchoBench and are recorded with their PAYPAL-* headers",
+      "result": "PASS",
+      "evidence": "Recording rec_mwdhuanv213fd5 on https://echobench.35-216-2-121.sslip.io (sandbox mode, webhook 7DN129377S414341L). Order 3RE32161SC8633459, capture 4PF24653JV1088034 (12.00), refunds 4.00 and 8.00 from MugShop's admin route. Four deliveries, each with PAYPAL-TRANSMISSION-ID/-SIG and cert_url on api.sandbox.paypal.com: CHECKOUT.ORDER.APPROVED WH-03M836374A321061A-9YH27962VR649240K, PAYMENT.CAPTURE.COMPLETED WH-1E728186RK2013307-0RP58738CT935322S, PAYMENT.CAPTURE.REFUNDED WH-8EH49998UT383121R-9ST02389V5578644J and WH-33E87674C80765127-5PG46551WY547335C. MugShop verified and answered 200 to each. Start points SP0 to SP3 taken."
+    },
+    {
+      "id": "V1",
+      "claim": "Shake all on that real recording (PayPal's records read from the sandbox)",
+      "result": "RUN",
+      "evidence": "MugShop (planted bugs): S0 to S4 red (shipped 2 times), S5 red (PayPal 12.00 refunded, shop 4.00), S5b red (PayPal 12.00 in 2 refunds, shop 8.00 in 1), S6 green (2 forged events rejected), S7 red, D1 na (no dispute in this recording). MugShop (reference fix): S0 to S6 green, S7 amber, D1 na. Same verdicts as on the stand-in recording. The recorded S1 patch (Claude Sonnet, 2026-11-12) re-run on this recording: S1 green, but S3 and S4 red (order status CREATED, expected CAPTURED), so EchoBench marks it not verified; on the stand-in recording it passed."
+    },
     {
       "id": "V4",
       "claim": "The SDK read equals the plain REST read of the same real order",
@@ -72,8 +84,10 @@
     }
   ],
   "notRunOnTheSandbox": [
-    "Recording real webhook deliveries (V1 to V3, V6, V7, V9: they need a public URL)",
-    "The webhook scenarios S0 to D1 on real deliveries (they need a recording from V1; until then they run on the local stand-in)",
+    "PayPal resends of a recorded event: timing, new signature, old originals (V2, V3)",
+    "A postback with a forged cert_url and simulator events (V6, V7)",
+    "A real dispute event, so D1 still runs on the stand-in's synthetic dispute (V9)",
+    "EverShop (R1) on the sandbox",
     "The PAYPAL_CLIENT_IMPL=rest rerun and the paypal-debug-id header check on an error reply (V4 remainder)"
   ]
 }

@@ -38,7 +38,8 @@ test('the read-only role may only run a single SELECT', () => {
 test('every state read runs inside a READ ONLY transaction on the read-only connection', async () => {
   const { module, log } = fakePg([
     { match: /FROM "order"/, rows: [{ id: 7, payment_status: 'paid', shipment_status: 'unfulfilled' }] },
-    { match: /FROM "payment_transaction"/, rows: [{ id: 'CAP1', type: 'online', amount: '12.00' }, { id: 'REF1', type: 'offline', amount: '4.00' }] },
+    // EverShop 2.4.0 writes transaction_type 'online' for both; payment_action tells them apart (schema.json).
+    { match: /FROM "payment_transaction"/, rows: [{ id: 'CAP1', type: 'capture', amount: '12.00' }, { id: 'REF1', type: 'refund', amount: '4.00' }] },
     { match: /FROM "shipment"/, rows: [{ n: '0' }] },
   ])
   const target = createEvershopTarget(lab, { pgModule: module, env })
@@ -98,7 +99,7 @@ test('database names are checked before they go into SQL', async () => {
 })
 
 test('the schema check names the columns that are missing, so a wrong guess is found before a run', async () => {
-  const have = { order: ['order_id', 'integration_order_id', 'payment_status'], payment_transaction: ['payment_transaction_order_id', 'transaction_id', 'transaction_type', 'amount'], shipment: ['shipment_order_id'] }
+  const have = { order: ['order_id', 'integration_order_id', 'payment_status'], payment_transaction: ['payment_transaction_order_id', 'transaction_id', 'payment_action', 'amount'], shipment: ['shipment_order_id'] }
   const { module } = fakePg([{ match: /information_schema/, rows: [] }])
   const target = createEvershopTarget(lab, { pgModule: { Client: class extends module.Client {
     async query(sql, params) {
@@ -111,12 +112,26 @@ test('the schema check names the columns that are missing, so a wrong guess is f
   assert.deepEqual(result.missing, ['order.shipment_status'])
 })
 
-test('without the pg package the target says what to install instead of crashing', async () => {
+const pgInstalled = await import('pg').then(() => true, () => false)
+
+test('without the pg package the target says what to install instead of crashing', { skip: pgInstalled && 'pg is installed here (R1 run), so the missing-package path cannot be exercised' }, async () => {
   const target = createEvershopTarget(lab, { env })
   await assert.rejects(() => target.readState('X'), /npm install pg|"pg" package/)
 })
 
 test('EverShop reports no return path, refund entry or dispute hold, so those scenarios say n/a instead of guessing', () => {
   const target = createEvershopTarget(lab, { pgModule: fakePg([]).module, env })
-  assert.deepEqual(target.capabilities, { returnPath: false, disputes: false, refunds: false, reset: true })
+  assert.deepEqual(target.capabilities, { returnPath: false, disputes: false, refunds: false, reset: true, shipsByHand: true })
+})
+
+test('a shop that ships by hand passes I1 when the one capture is booked once, and fails when a webhook ships it', async () => {
+  const { evaluate } = await import('../server/oracle.js')
+  const ledger = { captures: [{ id: 'CAP1', amount: '12.00' }], refunds: [] }
+  const base = { exists: true, status: 'paypal_captured', on_hold: false, shipments: [], refunds: [], processed_event_ids: [] }
+  const booked = evaluate(['I1', 'I4'], { expect: {}, ledger, shipsByHand: true, after: { ...base, fulfilled_count: 0, captures: [{ id: 'CAP1', amount: '12.00' }] } })
+  assert.deepEqual(booked.map((v) => v.status), ['pass', 'pass'])
+  const missing = evaluate(['I1'], { expect: {}, ledger, shipsByHand: true, after: { ...base, fulfilled_count: 0, captures: [] } })
+  assert.equal(missing[0].status, 'fail')
+  const shipped = evaluate(['I1'], { expect: {}, ledger, shipsByHand: true, after: { ...base, fulfilled_count: 1, captures: [{ id: 'CAP1', amount: '12.00' }] } })
+  assert.equal(shipped[0].status, 'fail')
 })

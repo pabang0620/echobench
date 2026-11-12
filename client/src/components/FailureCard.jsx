@@ -1,19 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api.js'
-import { Evidence, Spinner, StatusBadge } from './common.jsx'
-import ModelText from './ModelText.jsx'
+import { RULE_NAMES } from '../rules.js'
+import { Evidence, Spinner, StatusIcon } from './common.jsx'
+import Diagnosis from './Diagnosis.jsx'
 import ProxyStory from './ProxyStory.jsx'
 import Timeline from './Timeline.jsx'
-
-function Diff({ text }) {
-  return (
-    <pre className="diff" aria-label="Proposed patch">
-      {text.split('\n').map((line, i) => (
-        <span key={i} className={line.startsWith('+') && !line.startsWith('+++') ? 'diff__add' : line.startsWith('-') && !line.startsWith('---') ? 'diff__del' : line.startsWith('@@') ? 'diff__hunk' : ''}>{line}{'\n'}</span>
-      ))}
-    </pre>
-  )
-}
 
 function contractNote(run) {
   if (!run.card) return 'This run moves no money. The model has no access to contract runs.'
@@ -21,71 +12,60 @@ function contractNote(run) {
   return 'In this run the refund goes to the local PayPal stand-in, no sandbox and no real money. The model has no access to contract runs.'
 }
 
-function modelBadge(d) {
-  const source = d.explanation.source || d.explanation.modelName || 'the model'
-  if (d.mode === 'mock') return { tone: 'amber', text: 'Mocked model output' }
-  if (d.mode === 'recorded') return { tone: 'good', text: `Recorded run: ${d.recorded.source}, ${d.recorded.recordedAt}` }
-  return { tone: 'good', text: `Written by ${source}` }
+const VERDICT_WORD = { fail: 'failed', warn: 'warning', pass: 'passed', na: 'not applicable' }
+const VERDICT_TONE = { fail: 'red', warn: 'amber', pass: 'green' }
+
+// One annotation per rule verdict, failures first: "I1 failed: the mug was shipped 2 times".
+function Annotations({ run, summary }) {
+  const order = { fail: 0, warn: 1, pass: 2 }
+  const verdicts = [...run.verdicts].sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3))
+  return verdicts.map((v, i) => (
+    <div key={v.rule} className={`panel anno anno--${VERDICT_TONE[v.status] || 'none'}`}>
+      <div className="anno__body">
+        <b className="anno__rule">{v.rule} {VERDICT_WORD[v.status] || v.status}:</b> {v.message}
+        <p>{i === 0 && summary ? `${summary} ` : ''}Rule: {RULE_NAMES[v.rule] || v.rule}.</p>
+        <Evidence title="Evidence" data={v.evidence} />
+      </div>
+    </div>
+  ))
 }
 
-function Diagnosis({ diagnosis, applying, onApply, canEdit }) {
-  const c = diagnosis.candidate
-  const badge = modelBadge(diagnosis)
-  const real = diagnosis.mode !== 'mock'
-  const modelCalls = diagnosis.mode === 'recorded' ? diagnosis.recorded.toolCalls : diagnosis.modelCalls || []
-  const suite = c?.suite || []
-  const suiteGreen = suite.filter((s) => s.status === 'green' || s.status === 'amber').length
+// Deliveries as a CI log: line number, HTTP status, label, time. Shipments from the verdict evidence follow in red.
+function DeliveryLog({ run }) {
+  const first = run.deliveries.find((d) => d.body?.orderId)?.body
+  const shipments = run.verdicts.find((v) => v.rule === 'I1' && v.status === 'fail')?.evidence?.shipments || []
+  if (!run.deliveries.length && !shipments.length) return null
   return (
-    <div className="diag">
-      <div className="diag__meta">
-        <span className={`pill pill--${badge.tone}`}>{badge.text}</span>
-        {diagnosis.mode === 'recorded' && <span className="pill pill--mute">replayed without a key; tsc and the re-runs below are run again now</span>}
-        {diagnosis.precomputed && <span className="pill pill--mute">precomputed</span>}
-        {diagnosis.fallbackReason && <span className="pill pill--amber">model unavailable, fell back to mocked output</span>}
-      </div>
-      {!real ? (
-        <>
-          <h4>What went wrong (scripted text, no model wrote this)</h4>
-          <ul>{diagnosis.explanation.cause.map((t, i) => <li key={i}>{t}</li>)}</ul>
-          {diagnosis.explanation.fix.length > 0 && (<><h4>The fix (scripted text)</h4><ul>{diagnosis.explanation.fix.map((t, i) => <li key={i}>{t}</li>)}</ul></>)}
-        </>
-      ) : (
-        <>
-          <h4>Explanation from {diagnosis.explanation.source || diagnosis.explanation.modelName || 'the model'}{diagnosis.mode === 'recorded' ? ` (${diagnosis.recorded.model}, recorded ${diagnosis.recorded.recordedAt})` : ''}</h4>
-          {diagnosis.explanation.model ? <ModelText text={diagnosis.explanation.model} /> : <p className="muted">The model returned no explanation text.</p>}
-          {diagnosis.explanation.evidence?.length > 0 && <Evidence title="Judge's verdicts (EchoBench, not the model)" data={diagnosis.explanation.evidence.join('\n')} />}
-        </>
-      )}
-      {c ? (
-        <>
-          <div className="diag__badges">
-            <span className={`badge badge--${c.tscOk ? 'good' : 'bad'}`}>tsc {c.tscOk ? 'passed' : 'failed'}</span>
-            {c.rerun && <span className={`badge badge--${c.rerun.status === 'green' || c.rerun.status === 'amber' ? 'good' : 'bad'}`}>copy re-run {c.rerun.status.toUpperCase()}</span>}
-            {suite.length > 0 && <span className="badge badge--good">{suiteGreen}/{suite.length} scenarios pass on the copy</span>}
-          </div>
-          {c.tscOk ? <Diff text={c.diff} /> : <Evidence title="tsc output" data={c.tsc} />}
-          <div className="diag__actions">
-            {c.applied ? <span className="badge badge--good">Applied to the MugShop working copy</span> : (
-              <button type="button" className="btn btn--primary" disabled={!canEdit || !c.verified || !c.dir || applying} onClick={onApply}>
-                Apply to the MugShop working copy
-              </button>
-            )}
-            {!c.dir && !c.applied && <span className="muted small">This patch was computed ahead of time. Press "Explain and fix again" to get one you can apply.</span>}
-            {c.dir && !c.verified && <span className="muted small">Only a patch that passes tsc and turns the scenario green, checked by EchoBench's own re-run, can be applied.</span>}
-          </div>
-        </>
-      ) : <p className="muted">No patch for this target. A real model run (LLM_BACKEND=account or ANTHROPIC_API_KEY) can write one.</p>}
-      {modelCalls.length > 0 && <Evidence title={`Tool calls the model made, in order (${modelCalls.length})`} data={[...modelCalls.map((m, i) => `${i + 1}. ${Number.isInteger(m.atMs) ? `[${(m.atMs / 1000).toFixed(1)} s] ` : ''}${m.tool}${m.summary ? ` ${m.summary}` : ''}`), ...(diagnosis.recorded?.durationMs ? [`Model time: ${Math.round(diagnosis.recorded.durationMs / 1000)} s`] : diagnosis.modelMs ? [`Model time: ${Math.round(diagnosis.modelMs / 1000)} s`] : [])].join('\n')} />}
-      <Evidence title="Tool steps run by this server (real tools, tsc, re-runs)" data={diagnosis.steps.map((s) => `${s.tool}: ${s.summary}`).join('\n')} />
+    <div className="panel">
+      <h3 className="panel__head">Deliveries {first && <small className="mono">order {first.orderId}{first.captureId ? `, capture ${first.captureId}` : ''}</small>}</h3>
+      <ol className="log">
+        {run.deliveries.map((d, i) => (
+          <li key={`d${i}`}>
+            <span className="log__ln">{i + 1}</span>
+            <span className={Number(d.status) >= 200 && Number(d.status) < 300 ? 'log__ok' : 'log__bad'}>{d.status ?? '-'}</span>
+            <span>{d.label}</span>
+            <span className="log__ms">{Number.isFinite(d.ms) ? `${d.ms} ms` : ''}</span>
+          </li>
+        ))}
+        {shipments.map((s, i) => (
+          <li key={`s${i}`} className="log__bad">
+            <span className="log__ln">{run.deliveries.length + i + 1}</span>
+            <span>ship</span>
+            <span>shipment #{s.id} at {s.at_event}</span>
+            <span />
+          </li>
+        ))}
+      </ol>
     </div>
   )
 }
 
-export default function FailureCard({ runId, onChanged, onClose, editable }) {
+export default function FailureCard({ runId, scenarios = [], onChanged, editable }) {
   const [run, setRun] = useState(null)
   const [diagnoses, setDiagnoses] = useState([])
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
+  const [raw, setRaw] = useState(false)
 
   const load = useCallback(async () => {
     try {
@@ -123,43 +103,48 @@ export default function FailureCard({ runId, onChanged, onClose, editable }) {
     onChanged()
   })
 
-  if (!run) return <section className="card">{error ? <p className="error">{error}</p> : <Spinner label="Loading" />}</section>
+  if (!run) return <div className="panel"><div className="panel__body">{error ? <p className="error">{error}</p> : <Spinner label="Loading" />}</div></div>
   const failing = run.status === 'red' || run.status === 'amber'
   const latest = diagnoses[0]
+  const summary = scenarios.find((s) => s.scenario.id === run.scenarioId)?.scenario.summary
+  const sub = [run.startPoint, (run.rules || []).join(', '), Number.isFinite(run.durationMs) ? `${run.durationMs} ms` : '', run.resetOk === false ? 'reset failed' : 'reset ok'].filter(Boolean).join(' · ')
   return (
-    <section className="card card--detail" aria-label={`Result of ${run.scenarioId}`}>
-      <div className="card__head">
-        <div>
-          <h3>{run.scenarioId} {run.title}</h3>
-          <p>{run.headline}</p>
-        </div>
-        <div className="card__head-actions">
-          <StatusBadge status={run.status} />
-          <button type="button" className="btn btn--small" onClick={onClose}>Close</button>
-        </div>
+    <article className="card--detail" aria-label={`Result of ${run.scenarioId}`}>
+      <div className="dhead">
+        <StatusIcon status={run.status} />
+        <h2>{run.scenarioId} {run.title}</h2>
+        <span className="dhead__sub">{sub}</span>
+        {run.precomputed && <span className="pill pill--mute" title="Computed ahead of time against the local stand-in. Press Shake all to run it now.">precomputed</span>}
+        <button type="button" className="btn dhead__btn" aria-expanded={raw} onClick={() => setRaw((v) => !v)}>{raw ? 'Hide raw evidence' : 'Show raw evidence'}</button>
       </div>
-      <Timeline timeline={run.timeline} targetId={run.targetId} caption={`Scenario ${run.scenarioId}: ${run.title}.`} />
-      <ul className="verdicts">
-        {run.verdicts.map((v) => (
-          <li key={v.rule}>
-            <StatusBadge status={v.status} /> <strong>{v.rule}</strong> {v.message}
-            <Evidence title="Evidence" data={v.evidence} />
-          </li>
-        ))}
-      </ul>
-      {run.kind === 'contract' && <ProxyStory story={run.proxyStory} />}
-      <Evidence title="Show raw evidence (deliveries, shop state, PayPal records, proxy log)" data={{ deliveries: run.deliveries, shopStateAfter: run.stateAfter, paypalRecords: run.ledger, proxyLog: run.proxyLog, note: run.ledgerFinalNote }} />
-      {run.kind === 'webhook' && failing && (
-        <div className="ai">
-          <h3>AI explanation and fix</h3>
-          {busy ? <Spinner label={busy} /> : (
-            <button type="button" className="btn" onClick={diagnose}>{latest ? 'Explain and fix again' : 'Explain and fix'}</button>
-          )}
-          {latest && <Diagnosis diagnosis={latest} applying={Boolean(busy)} canEdit={editable} onApply={() => apply(latest.id)} />}
+      <p className={run.verdicts.some((v) => v.message === run.headline) ? 'sr-only' : 'dhead__headline'}>{run.headline}</p>
+      {raw && (
+        <div className="panel">
+          <h3 className="panel__head">Raw evidence <small>deliveries, shop state, PayPal records, proxy log</small></h3>
+          <pre className="panel__pre">{JSON.stringify({ deliveries: run.deliveries, shopStateAfter: run.stateAfter, paypalRecords: run.ledger, proxyLog: run.proxyLog, note: run.ledgerFinalNote }, null, 2)}</pre>
         </div>
       )}
-      {run.kind === 'contract' && <p className="muted small">{contractNote(run)}</p>}
+      <Annotations run={run} summary={summary} />
+      {run.kind === 'contract' && <div className="panel"><ProxyStory story={run.proxyStory} /></div>}
+      <div className="panel">
+        <h3 className="panel__head">Books vs PayPal's records</h3>
+        <Timeline timeline={run.timeline} targetId={run.targetId} caption={`Scenario ${run.scenarioId}: ${run.title}.`} />
+      </div>
+      <DeliveryLog run={run} />
+      {run.kind === 'webhook' && failing && (
+        <div className="panel ai">
+          <div className="fix">
+            <span className="fix__spark" aria-hidden="true">{'✦'}</span>
+            <p><b>Explain and fix.</b> The AI step reads this failure, the recorded event and the handler, tries a patch on a copy, runs <span className="mono">tsc</span>, then re-runs every scenario on the copy.</p>
+            {busy ? <Spinner label={busy} /> : (
+              <button type="button" className="btn btn--primary" onClick={diagnose}>{latest ? 'Explain and fix again' : 'Explain and fix'}</button>
+            )}
+          </div>
+          {latest && <div className="panel__body"><Diagnosis diagnosis={latest} applying={Boolean(busy)} canEdit={editable} onApply={() => apply(latest.id)} /></div>}
+        </div>
+      )}
+      {run.kind === 'contract' && <p className="muted small">{run.confirmedBy ? `Approved by ${run.confirmedBy}. ` : ''}{contractNote(run)}</p>}
       {error && <p className="error" role="alert">{error}</p>}
-    </section>
+    </article>
   )
 }

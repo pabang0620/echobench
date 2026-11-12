@@ -26,7 +26,7 @@ export function createAgentSession(lab, { run, recording, target }) {
 
   const tools = {
     async get_timeline() {
-      return note('get_timeline', `timeline of ${run.scenarioId}`, { scenario: run.scenarioId, timeline: run.timeline, headline: run.headline })
+      return note('get_timeline', `timeline of ${run.scenarioId}`, { scenario: run.scenarioId, orderId: recording.orderId, captureId: recording.captureId, timeline: run.timeline, headline: run.headline })
     },
     async get_failures() {
       const runs = lab.store.listRuns({ recordingId: recording.id, targetId: target.id })
@@ -57,9 +57,11 @@ export function createAgentSession(lab, { run, recording, target }) {
     async lookup_sdk({ name }) {
       return note('lookup_sdk', String(name), lookupSdk(name))
     },
-    async paypal_truth({ order_id }) {
-      const ledger = await lab.truth.order(order_id)
-      return note('paypal_truth', `PayPal records for ${order_id}`, ledger)
+    // The recorded order is the default: in the account runs the model passed the scenario id (S4, S5) here.
+    async paypal_truth({ order_id } = {}) {
+      const id = order_id && order_id !== run.scenarioId ? order_id : recording.orderId
+      const ledger = await lab.truth.order(id)
+      return note('paypal_truth', `PayPal records for ${id}`, ledger)
     },
     async run_scenario({ scenario_id }) {
       const scenario = scenarioById(scenario_id)
@@ -112,7 +114,7 @@ export const TOOL_SPECS = [
   { name: 'read_contract', description: "The target's paypal-plan.md rows (DUPLICATE CLAIMS, UNKNOWN OUTCOMES, INVARIANTS).", input_schema: { type: 'object', properties: {} } },
   { name: 'read_handler_file', description: 'Read a source file of the target copy, for example src/webhook.ts.', input_schema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
   { name: 'lookup_sdk', description: 'Look up an APIMatic PayPal SDK operation, for example payments.refundCapturedPayment.', input_schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] } },
-  { name: 'paypal_truth', description: "Read-only: PayPal's own records of an order (captures and refunds).", input_schema: { type: 'object', properties: { order_id: { type: 'string' } }, required: ['order_id'] } },
+  { name: 'paypal_truth', description: "Read-only: PayPal's own records of an order (captures and refunds). Leave order_id out to read the recorded order (its id is in get_timeline).", input_schema: { type: 'object', properties: { order_id: { type: 'string', description: 'PayPal order id (orderId in get_timeline). Optional: defaults to the recorded order' } } } },
   { name: 'run_scenario', description: 'Re-run a webhook scenario (S0..S7, D1) on the patched copy if one exists, otherwise on the original. Contract scenarios are not available.', input_schema: { type: 'object', properties: { scenario_id: { type: 'string' } }, required: ['scenario_id'] } },
   { name: 'check_invariants', description: 'The rule verdicts of a run.', input_schema: { type: 'object', properties: { run_id: { type: 'string' } }, required: ['run_id'] } },
   { name: 'propose_patch', description: 'Apply edits to a COPY of the handler, type-check it with tsc, return the diff. Edits are {file, old_str, new_str} (old_str must occur once) or {file, content}. At most 3 attempts.', input_schema: { type: 'object', properties: { edits: { type: 'array', items: { type: 'object', properties: { file: { type: 'string' }, old_str: { type: 'string' }, new_str: { type: 'string' }, content: { type: 'string' } }, required: ['file'] } } }, required: ['edits'] } },

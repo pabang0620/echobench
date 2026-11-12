@@ -21,6 +21,21 @@ function kindOf(headers) {
   return 'unknown'
 }
 
+// A plan the plugin really generated (targets/ab/sdk-plugin-on, 2026-11-12) kept the section titles
+// but shortened the column names ("Claim store", "Caught where", "Code"). Such a table is recognised by
+// the heading above it, and its columns are read in the skill's order.
+function kindByHeading(heading) {
+  const h = norm(heading)
+  for (const [kind, spec] of Object.entries(HEADER_SETS)) if (h.includes(norm(spec.title))) return kind
+  return 'unknown'
+}
+
+function canonicalHeaders(kind, headers) {
+  const spec = HEADER_SETS[kind]
+  if (!spec || spec.columns.map(norm).filter((n) => headers.map(norm).includes(n)).length >= Math.min(3, spec.columns.length)) return headers
+  return headers.map((name, k) => spec.columns[k] || name)
+}
+
 export function parsePlan(markdown) {
   const lines = markdown.split(/\r?\n/)
   const tables = []
@@ -30,14 +45,17 @@ export function parsePlan(markdown) {
     const h = /^#{1,6}\s+(.*)$/.exec(line)
     if (h) heading = h[1].trim()
     if (!line.trim().startsWith('|') || !/^\s*\|?\s*:?-{2,}/.test(lines[i + 1] || '') ) continue
-    const headers = splitRow(line).map(clean)
+    const written = splitRow(line).map(clean)
+    const byColumns = kindOf(written)
+    const kind = byColumns === 'unknown' ? kindByHeading(heading) : byColumns
+    const headers = canonicalHeaders(kind, written)
     const rows = []
     let j = i + 2
     for (; j < lines.length && lines[j].trim().startsWith('|'); j += 1) {
       const cells = splitRow(lines[j])
       rows.push({ line: j + 1, cells: Object.fromEntries(headers.map((name, k) => [name, cells[k] ?? ''])) })
     }
-    tables.push({ kind: kindOf(headers), heading, headers, startLine: i + 1, endLine: j, rows })
+    tables.push({ kind, heading, headers, writtenHeaders: written, startLine: i + 1, endLine: j, rows })
     i = j - 1
   }
 

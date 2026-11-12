@@ -41,6 +41,22 @@ export function createEvershopTarget(lab, { pgModule = null, env = process.env }
   let child = null
   let log = ''
 
+  // EverShop's own settings come from its environment, never from edits to its files:
+  // DB_* for its database (same server as the admin URL, database EVERSHOP_DB_NAME), and node-config's
+  // NODE_CONFIG for system.paypal, so every PayPal call it makes goes through EchoBench's proxy
+  // (stand-in or sandbox) with the webhook id the recording is signed for.
+  function evershopEnv() {
+    const db = adminUrl ? new URL(adminUrl) : null
+    const paypal = { status: 1, environment: lab.proxy.baseUrl, clientId: lab.cfg.clientId, clientSecret: lab.cfg.clientSecret, webhookId: lab.cfg.webhookId, reconcileEnabled: false }
+    return {
+      ...process.env,
+      PORT: String(port),
+      SUPPRESS_NO_CONFIG_WARNING: '1',
+      ...(db && !env.DB_HOST ? { DB_HOST: db.hostname, DB_PORT: db.port || '5432', DB_USER: decodeURIComponent(db.username), DB_PASSWORD: decodeURIComponent(db.password), DB_NAME: dbName, DB_SSLMODE: 'disable' } : {}),
+      NODE_CONFIG: JSON.stringify({ system: { paypal } }),
+    }
+  }
+
   const connect = async (url) => {
     const { default: pg } = await (pgModule ? Promise.resolve({ default: pgModule }) : defaultPg())
     const client = new pg.Client({ connectionString: url })
@@ -73,7 +89,7 @@ export function createEvershopTarget(lab, { pgModule = null, env = process.env }
     id: 'evershop',
     label: 'EverShop (unmodified)',
     kind: 'postgres',
-    capabilities: { returnPath: false, disputes: false, refunds: false, reset: true },
+    capabilities: { returnPath: false, disputes: false, refunds: false, reset: true, shipsByHand: true },
     meta: { variant: 'unmodified', group: 'evershop' },
     get baseUrl() {
       return `http://127.0.0.1:${port}`
@@ -86,7 +102,9 @@ export function createEvershopTarget(lab, { pgModule = null, env = process.env }
       if (child) return
       if (!dir || !existsSync(dir)) throw new Error('EVERSHOP_DIR does not exist. Run scripts/install-evershop.sh first.')
       const [cmd, ...args] = startCmd.split(' ')
-      child = spawn(cmd, args, { cwd: dir, env: { ...process.env, PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'] })
+      // Own process group: EverShop starts an event and a cron child that keep database connections open,
+      // and a template database can only be copied once all of them are gone (stop() ends the whole group).
+      child = spawn(cmd, args, { cwd: dir, env: evershopEnv(), stdio: ['ignore', 'pipe', 'pipe'], detached: true })
       const keep = (chunk) => {
         log = (log + chunk.toString()).slice(-4000)
       }
@@ -113,9 +131,19 @@ export function createEvershopTarget(lab, { pgModule = null, env = process.env }
       const current = child
       child = null
       await new Promise((resolve) => {
-        current.once('exit', resolve)
-        current.kill('SIGTERM')
-        setTimeout(() => current.kill('SIGKILL'), 5000).unref()
+        const group = (signal) => {
+          try {
+            process.kill(-current.pid, signal)
+          } catch {
+            // already gone
+          }
+        }
+        current.once('exit', () => setTimeout(() => {
+          group('SIGKILL')
+          resolve()
+        }, 300))
+        group('SIGTERM')
+        setTimeout(() => group('SIGKILL'), 5000).unref()
       })
     },
 

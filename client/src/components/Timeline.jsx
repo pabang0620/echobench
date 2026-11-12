@@ -1,6 +1,6 @@
 // Two lines: what PayPal's records say, and what the shop's books say. Flagged cells break a rule.
 export default function Timeline({ timeline, targetId, caption }) {
-  if (!timeline) return <p className="muted">Run a scenario to see PayPal's records next to the shop's books.</p>
+  if (!timeline) return <p className="panel__body muted">Run a scenario to see PayPal's records next to the shop's books.</p>
   const { paypal, shop } = timeline
   return (
     <div className="timeline" aria-label="PayPal records and shop books">

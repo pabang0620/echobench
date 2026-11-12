@@ -1,0 +1,153 @@
+{
+  "scenarioId": "S3",
+  "backend": "account",
+  "model": "claude-sonnet-5-5",
+  "source": "Claude Sonnet (local account)",
+  "recordedAt": "2026-11-12",
+  "text": "The patch works. S3 and every other scenario that failed before are now green, except S7, which is amber (a warning).\n\n**What went wrong in S3**\n- PayPal recorded one capture of 12.00, then two refunds (4.00 and 8.00).\n- The shop shipped the mug twice. That broke rule I1 (a mug ships once per captured payment). It also broke I4 (the delivery order must not change the outcome).\n- The cause is in `src/webhook.ts`.\n  - `PAYMENT.CAPTURE.COMPLETED` called `shipOrder` with no checks. It didn't check whether the order had already shipped, whether the event was a repeat, or whether a dispute was open.\n  - `CHECKOUT.ORDER.APPROVED` also called `shipOrder`, before the money was captured. So one approved event plus one completed event gave two shipments.\n  - The event log used `INSERT OR REPLACE`, which overwrote repeats instead of rejecting them.\n\n**The same file caused the other failures**\n- S0, S1, S2 and S4 had the same double-ship.\n- D1 shipped even though a dispute was open.\n- S7 re-processed an old event.\n- S5 and S5b: the refund handler deleted the order's earlier refund rows before inserting the new one, so only the last refund survived. Nothing compared the shop's books with PayPal, so a missed refund event was never caught up. `startReconcile` was empty.\n\n**The patch (only `src/webhook.ts`, passes tsc)**\n- Event IDs are claimed with `INSERT OR IGNORE`. A repeat event gets a 200 and does nothing.\n- `ORDER.APPROVED` no longer ships.\n- `CAPTURE.COMPLETED` ships only if the order has no shipment yet and is not on hold.\n- Refunds are stored with `INSERT OR IGNORE` per refund ID, and the `DELETE` is gone.\n- `startReconcile` now polls `getOrder` for every captured order and books any missing refunds. It uses the existing `reconcileIntervalMs` setting.\n\n**Re-run results**\n- Green: S0, S1, S2, S3, S4, S5, S5b, S6, D1.\n- Amber: S7. The old event was accepted with a 2xx and ignored as already processed. Nothing changed, which is the intended behaviour.\n\nI didn't run `check_invariants` on the re-runs. The verdicts above are the scenario headlines.\n\nI can't run the contract scenarios (C-DUP, C-UNK and the others). Those are still unrun. Nothing is applied until a person presses Apply.\n\nOne thing to know: a repeat event is dropped once its ID is logged. If the handler crashed halfway through an event, PayPal's retry of that event would be ignored. The reconcile loop would catch a missed refund, but nothing would catch a missed shipment.",
+  "durationMs": 49080,
+  "toolCalls": [
+    {
+      "tool": "get_failures",
+      "summary": "",
+      "atMs": 3759
+    },
+    {
+      "tool": "get_timeline",
+      "summary": "",
+      "atMs": 3799
+    },
+    {
+      "tool": "check_invariants",
+      "summary": "run_mwdi40ar9abf21",
+      "atMs": 4127
+    },
+    {
+      "tool": "read_contract",
+      "summary": "",
+      "atMs": 4150
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/webhook.ts",
+      "atMs": 4367
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/db.ts",
+      "atMs": 5870
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/events.ts",
+      "atMs": 6102
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/paypalPort.ts",
+      "atMs": 6280
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/server.ts",
+      "atMs": 12438
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/paypalTypes.ts",
+      "atMs": 12757
+    },
+    {
+      "tool": "read_handler_file",
+      "summary": "src/config.ts",
+      "atMs": 12894
+    },
+    {
+      "tool": "propose_patch",
+      "summary": "6 edit(s) in src/webhook.ts",
+      "atMs": 23515
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S3",
+      "atMs": 26457
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "D1",
+      "atMs": 27974
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S7",
+      "atMs": 28815
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S5b",
+      "atMs": 30236
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S5",
+      "atMs": 32734
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S4",
+      "atMs": 35030
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S2",
+      "atMs": 36631
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S1",
+      "atMs": 38237
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S0",
+      "atMs": 39816
+    },
+    {
+      "tool": "run_scenario",
+      "summary": "S6",
+      "atMs": 41208
+    }
+  ],
+  "edits": [
+    {
+      "file": "src/webhook.ts",
+      "old_str": "  run(db, 'INSERT OR REPLACE INTO processed_events (event_id, event_type, received_at) VALUES (?, ?, ?)', event.id, event.event_type, new Date().toISOString())\n",
+      "new_str": "  const claimed = run(db, 'INSERT OR IGNORE INTO processed_events (event_id, event_type, received_at) VALUES (?, ?, ?)', event.id, event.event_type, new Date().toISOString())\n  if (claimed === 0) return { status: 200, body: { ignored: 'duplicate event' } }\n"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      shipOrder(db, approvedOrderId(event), event.event_type) // PLANTED BUG B\n      return",
+      "new_str": "      // Money is not captured yet: do not ship here, wait for PAYMENT.CAPTURE.COMPLETED.\n      return"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      shipOrder(db, orderId, event.event_type) // PLANTED BUG A\n",
+      "new_str": "      const alreadyShipped = one(db, 'SELECT 1 AS found FROM shipments WHERE paypal_order_id = ?', orderId)\n      const held = one(db, 'SELECT 1 AS found FROM orders WHERE paypal_order_id = ? AND on_hold = 1', orderId)\n      if (!alreadyShipped && !held) shipOrder(db, orderId, event.event_type)\n"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "      run(db, 'DELETE FROM refunds WHERE paypal_order_id = ?', orderId) // PLANTED BUG C\n      run(db, 'INSERT INTO refunds",
+      "new_str": "      run(db, 'INSERT OR IGNORE INTO refunds"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "export function startReconcile(_db: Db, _port: PaypalPort): void {}",
+      "new_str": "export function startReconcile(db: Db, port: PaypalPort): void {\n  let busy = false\n  const timer = setInterval(async () => {\n    if (busy) return\n    busy = true\n    try {\n      const orders = all(db, 'SELECT DISTINCT paypal_order_id FROM captures')\n      for (const row of orders) {\n        const orderId = String(row.paypal_order_id)\n        const ledger = await port.getOrder(orderId)\n        for (const refund of ledger.refunds) {\n          if (refund.status === 'FAILED' || refund.status === 'CANCELLED') continue\n          run(db, 'INSERT OR IGNORE INTO refunds (paypal_refund_id, paypal_order_id, amount) VALUES (?, ?, ?)', refund.id, orderId, refund.amount)\n        }\n      }\n    } catch {\n      // try again on the next tick\n    } finally {\n      busy = false\n    }\n  }, config.reconcileIntervalMs)\n  timer.unref()\n}"
+    },
+    {
+      "file": "src/webhook.ts",
+      "old_str": "import { one, run, shipOrder, type Db } from './db.ts'",
+      "new_str": "import { all, one, run, shipOrder, type Db } from './db.ts'\nimport { config } from './config.ts'"
+    }
+  ]
+}

@@ -13,6 +13,28 @@ const EVENT_LABEL = {
   'CUSTOMER.DISPUTE.CREATED': 'dispute',
 }
 
+// Which order and capture a delivery is about, when the event says so. The sandbox webhook belongs to
+// an app that other shops may use too, so while a session knows its order, events about another
+// order are not recorded. An event that names neither is kept (the stand-in's minimal events).
+export function eventRefs(event) {
+  const r = event?.resource || {}
+  const up = (r.links || []).find((l) => l.rel === 'up')?.href || ''
+  const captureFromUp = /\/captures\/([^/?]+)/.exec(up)?.[1] || null
+  const disputed = (r.disputed_transactions || [])[0] || {}
+  return {
+    orderId: event?.event_type === 'CHECKOUT.ORDER.APPROVED' ? r.id || null : r.supplementary_data?.related_ids?.order_id || null,
+    captureId: event?.event_type === 'PAYMENT.CAPTURE.COMPLETED' ? r.id || null : captureFromUp || disputed.seller_transaction_id || null,
+  }
+}
+
+export function belongsToSession(session, event) {
+  const refs = eventRefs(event)
+  if (session.orderId && refs.orderId && refs.orderId !== session.orderId) return false
+  if (session.captureId && refs.captureId && refs.captureId !== session.captureId) return false
+  if (session.orderId && !session.captureId && refs.captureId && !refs.orderId && event?.event_type !== 'PAYMENT.CAPTURE.COMPLETED') return false
+  return true
+}
+
 function parseSafe(body) {
   try {
     return JSON.parse(body.toString('utf8'))
@@ -78,6 +100,10 @@ export function createRecorder({ store, getTarget }) {
     ingest(body, headers) {
       if (!session) return { stored: false }
       const event = parseSafe(body)
+      if (!belongsToSession(session, event)) {
+        session.ignored = (session.ignored || 0) + 1
+        return { stored: false, reason: 'another order' }
+      }
       const eventType = event?.event_type || 'UNKNOWN'
       if (eventType === 'CHECKOUT.ORDER.APPROVED' && !session.orderId) session.orderId = event.resource.id
       if (eventType === 'PAYMENT.CAPTURE.COMPLETED' && !session.captureId) session.captureId = event.resource.id
@@ -140,7 +166,7 @@ export function createRecorder({ store, getTarget }) {
     async finish() {
       if (!session) throw new Error('No recording session is running')
       await session.chain
-      const { chain: _chain, ...plain } = session
+      const { chain: _chain, ignored: _ignored, ...plain } = session
       const rec = { ...plain, deliveries: plain.deliveries.map((d) => ({ ...d })) }
       const dir = store.saveRecording(rec)
       session = null
