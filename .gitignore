@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.scratch/
+data/
+VERIFY_RESULTS.json
+.evershop/
+# EverShop run records can contain a defect that has not been reported to its maintainers yet.
+# Keep them out of git until that has happened.
+targets/evershop/runs/
+targets/ab/*/node_modules/
+targets/ab/*/data/

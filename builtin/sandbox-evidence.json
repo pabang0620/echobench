@@ -1,0 +1,49 @@
+{
+  "measuredAt": "2026-11-12",
+  "environment": "PayPal sandbox (api-m.sandbox.paypal.com)",
+  "label": "Measured on the PayPal sandbox on 2026-11-12. Not re-run now: these are recorded results, the ids are the sandbox's own.",
+  "source": "VERIFY.md, Sandbox results (scripts/verify-sandbox.js V4, V5, V8 and scripts/sdk-smoke.js V11)",
+  "items": [
+    {
+      "id": "V4",
+      "claim": "The SDK read equals the plain REST read of the same real order",
+      "result": "PASS",
+      "evidence": "same: true. Order 5P708734V2966923V, capture 39101844PY640523P, COMPLETED, 12.00. client.orders.getOrder and GET /v2/checkout/orders/{id} gave the same normalized order."
+    },
+    {
+      "id": "V4",
+      "claim": "MugShop's capture through the SDK returns the captures (Prefer: return=representation)",
+      "result": "PASS",
+      "evidence": "Order 8Y281151LE2041832 captured through the SDK path. The reply carried purchase_units[].payments.captures, capture 5X970784R08289842."
+    },
+    {
+      "id": "V4",
+      "claim": "Found: captureOrder with no body is answered 415",
+      "result": "FOUND",
+      "evidence": "The SDK map lists the captureOrder body as optional and then sends no Content-Type header. The sandbox answered 415 UNSUPPORTED_MEDIA_TYPE. Passing body {} fixes it (targets/mugshop/src/paypalSdk.ts, test/sdk-adapter.test.js)."
+    },
+    {
+      "id": "V5",
+      "claim": "The same PayPal-Request-Id returns the same refund and creates no second one",
+      "result": "PASS",
+      "evidence": "Capture 5X970784R08289842, refund 52676734MU2400949 returned 201. The repeat with the same PayPal-Request-Id returned 200 with the same refund id. Refunds on the order: 1."
+    },
+    {
+      "id": "V8",
+      "claim": "A real contract payment recorded for Contract tab runs",
+      "result": "PASS",
+      "evidence": "Order 8Y281151LE2041832, capture 5X970784R08289842, 12.00. V5 then refunded 4.00 of it."
+    },
+    {
+      "id": "V11",
+      "claim": "SDK smoke: reads work with the sandbox credential and a 404 decodes as a PayPal error",
+      "result": "PASS",
+      "evidence": "getOrder ok (COMPLETED, 12.00), getCapturedPayment ok (COMPLETED), a made-up order id gave a typed 404 decoded through the SDK Error model, OAuth token request ok. No 403 on any operation."
+    }
+  ],
+  "notRunOnTheSandbox": [
+    "C-UNK through the proxy against the sandbox (V5 second half, a person presses Run)",
+    "Recording real webhook deliveries (V1 to V3, V6, V7, V9: they need a public URL)",
+    "The PAYPAL_CLIENT_IMPL=rest rerun and the paypal-debug-id header check on an error reply (V4 remainder)"
+  ]
+}
